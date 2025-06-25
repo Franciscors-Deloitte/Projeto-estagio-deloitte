@@ -1,0 +1,7 @@
+Integração: O que é ? Para que serve ? Arquitetura tipo
+ 
+AWS: O que é ? Que serviços podemos usar em integração ? Uma descrição de cada serviço
+ 
+Segurança: Metodos de autenticação e autorização 
+ 
+Terraform/IaC: O que é ? Como funciona ? Vantagens de usar  
