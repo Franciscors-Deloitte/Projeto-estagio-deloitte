@@ -10,12 +10,12 @@ locals {
 # Security Group
 #########################
 resource "aws_security_group" "this" {
-  count                   = var.create ? 1 : 0
-  name                    = var.use_name_prefix ? null : var.name
-  name_prefix             = var.use_name_prefix ? "${var.name}-" : null
-  description             = var.description
-  vpc_id                  = var.vpc_id
-  revoke_rules_on_delete  = var.revoke_rules_on_delete
+  count                  = var.create && var.create_sg ? 1 : 0
+  name                   = var.use_name_prefix ? null : var.name
+  name_prefix            = var.use_name_prefix ? "${var.name}-" : null
+  description            = var.description
+  vpc_id                 = var.vpc_id
+  revoke_rules_on_delete = var.revoke_rules_on_delete
 
   tags = merge(
     var.tags,
@@ -24,7 +24,7 @@ resource "aws_security_group" "this" {
 }
 
 #########################
-# Ingress rules
+# Ingress Rules
 #########################
 resource "aws_security_group_rule" "ingress" {
   count             = length(local.ingress_rules)
@@ -44,7 +44,7 @@ resource "aws_security_group_rule" "ingress" {
 }
 
 #########################
-# Egress rules
+# Egress Rules
 #########################
 resource "aws_security_group_rule" "egress" {
   count             = length(local.egress_rules)
@@ -62,4 +62,3 @@ resource "aws_security_group_rule" "egress" {
   self                     = try(local.egress_rules[count.index].self, null)
   description              = try(local.egress_rules[count.index].description, null)
 }
-

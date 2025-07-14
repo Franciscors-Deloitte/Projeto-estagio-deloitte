@@ -176,3 +176,9 @@ variable "role_session_name" {
   type        = list(string)
   default     = ["$${aws:username}"]
 }
+
+variable "allow_self_assume_role" {
+  description = "Allow the IAM role to assume itself (useful for specific service integrations)"
+  type        = bool
+  default     = false
+}

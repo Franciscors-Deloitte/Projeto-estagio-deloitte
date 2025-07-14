@@ -72,18 +72,6 @@ variable "cluster_enabled_log_types" {
   default     = []
 }
 
-variable "cluster_compute_config" {
-  description = "Cluster compute configuration (for Fargate/Managed/Outpost)"
-  type        = any
-  default     = {}
-}
-
-variable "control_plane_subnet_ids" {
-  description = "Subnet IDs for control plane ENIs"
-  type        = list(string)
-  default     = []
-}
-
 variable "subnet_ids" {
   description = "Subnet IDs for worker nodes"
   type        = list(string)
@@ -118,24 +106,6 @@ variable "iam_role_arn" {
   description = "IAM role ARN to use for the EKS cluster"
   type        = string
   default     = ""
-}
-
-variable "authentication_mode" {
-  description = "Authentication mode for the EKS cluster"
-  type        = string
-  default     = ""
-}
-
-variable "bootstrap_self_managed_addons" {
-  description = "Bootstrap addons on self-managed node groups"
-  type        = bool
-  default     = false
-}
-
-variable "cluster_force_update_version" {
-  description = "Force update of EKS version"
-  type        = bool
-  default     = false
 }
 
 variable "outpost_config" {

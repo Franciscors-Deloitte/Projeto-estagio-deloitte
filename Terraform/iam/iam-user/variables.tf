@@ -4,12 +4,6 @@ variable "create_user" {
   default     = true
 }
 
-variable "create_iam_user_login_profile" {
-  description = "Whether to create IAM user login profile"
-  type        = bool
-  default     = true
-}
-
 variable "name" {
   description = "Desired name for the IAM user"
   type        = string
@@ -27,10 +21,28 @@ variable "force_destroy" {
   default     = false
 }
 
-variable "password_reset_required" {
-  description = "Whether the user should be forced to reset the generated password on first login."
+variable "permissions_boundary" {
+  description = "The ARN of the policy that is used to set the permissions boundary for the user."
+  type        = string
+  default     = ""
+}
+
+variable "tags" {
+  description = "A map of tags to add to all resources."
+  type        = map(string)
+  default     = {}
+}
+
+variable "create_iam_user_login_profile" {
+  description = "Whether to create IAM user login profile"
   type        = bool
   default     = true
+}
+
+variable "pgp_key" {
+  description = "PGP key to encrypt the secret access key"
+  type        = string
+  default     = null
 }
 
 variable "password_length" {
@@ -39,20 +51,26 @@ variable "password_length" {
   default     = 8
 }
 
-variable "permissions_boundary" {
-  description = "The ARN of the policy that is used to set the permissions boundary for the user."
+variable "password_reset_required" {
+  description = "Whether the user should be forced to reset the generated password on first login."
+  type        = bool
+  default     = true
+}
+
+variable "create_iam_access_key" {
+  description = "Whether to create an IAM access key for the user"
+  type        = bool
+  default     = false
+}
+
+variable "iam_access_key_status" {
+  description = "Status of the access key (Active or Inactive)"
   type        = string
-  default     = ""
+  default     = "Active"
 }
 
 variable "policy_arns" {
   description = "The list of ARNs of policies directly assigned to the IAM user"
   type        = list(string)
   default     = []
-}
-
-variable "tags" {
-  description = "A map of tags to add to all resources."
-  type        = map(string)
-  default     = {}
 }
