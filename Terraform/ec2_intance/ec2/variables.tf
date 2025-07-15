@@ -1,3 +1,7 @@
+#############################
+# EC2 Instance
+#############################
+
 variable "create" {
   description = "Whether to create an instance"
   type        = bool
@@ -7,30 +11,6 @@ variable "create" {
 variable "ami" {
   description = "ID of AMI to use for the instance"
   type        = string
-  default     = null
-}
-
-variable "associate_public_ip_address" {
-  description = "Whether to associate a public IP address with an instance in a VPC"
-  type        = bool
-  default     = null
-}
-
-variable "availability_zone" {
-  description = "AZ to start the instance in"
-  type        = string
-  default     = null
-}
-
-variable "disable_api_termination" {
-  description = "If true, enables EC2 Instance Termination Protection"
-  type        = bool
-  default     = null
-}
-
-variable "ebs_optimized" {
-  description = "If true, the launched EC2 instance will be EBS-optimized"
-  type        = bool
   default     = null
 }
 
@@ -52,6 +32,18 @@ variable "key_name" {
   default     = null
 }
 
+variable "associate_public_ip_address" {
+  description = "Whether to associate a public IP address with an instance in a VPC"
+  type        = bool
+  default     = null
+}
+
+variable "availability_zone" {
+  description = "AZ to start the instance in"
+  type        = string
+  default     = null
+}
+
 variable "private_ip" {
   description = "Private IP address to associate with the instance in a VPC"
   type        = string
@@ -64,10 +56,16 @@ variable "subnet_id" {
   default     = null
 }
 
-variable "tags" {
-  description = "A mapping of tags to assign to the resource"
-  type        = map(string)
-  default     = {}
+variable "vpc_security_group_ids" {
+  description = "A list of security group IDs to associate with"
+  type        = list(string)
+  default     = []
+}
+
+variable "disable_api_termination" {
+  description = "If true, enables EC2 Instance Termination Protection"
+  type        = bool
+  default     = null
 }
 
 variable "user_data" {
@@ -76,16 +74,50 @@ variable "user_data" {
   default     = null
 }
 
-variable "vpc_security_group_ids" {
-  description = "A list of security group IDs to associate with"
-  type        = list(string)
-  default     = []
-}
-
 variable "enable_monitoring" {
   description = "Whether to enable detailed monitoring for the instance"
   type        = bool
   default     = false
+}
+
+variable "tags" {
+  description = "A mapping of tags to assign to the resources"
+  type        = map(string)
+  default     = {}
+}
+
+#############################
+# EBS Volume
+#############################
+
+variable "ebs_optimized" {
+  description = "If true, the launched EC2 instance will be EBS-optimized"
+  type        = bool
+  default     = null
+}
+
+variable "create_ebs" {
+  description = "Whether to create and attach an additional EBS volume"
+  type        = bool
+  default     = false
+}
+
+variable "ebs_volume_size" {
+  description = "Size of the additional EBS volume in GiB"
+  type        = number
+  default     = 10
+}
+
+variable "ebs_volume_type" {
+  description = "Type of the additional EBS volume"
+  type        = string
+  default     = "gp3"
+}
+
+variable "ebs_device_name" {
+  description = "Device name to attach the additional EBS volume (e.g., /dev/sdf)"
+  type        = string
+  default     = "/dev/sdf"
 }
 
 variable "root_volume_size" {
@@ -100,9 +132,9 @@ variable "root_volume_type" {
   default     = "gp3"
 }
 
-################################################################################
+#############################
 # Elastic IP
-################################################################################
+#############################
 
 variable "attach_eip" {
   description = "Whether to allocate and attach an Elastic IP to the instance"
