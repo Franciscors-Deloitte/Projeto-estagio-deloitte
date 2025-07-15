@@ -18,11 +18,6 @@ output "iam_role_unique_id" {
   value       = try(aws_iam_role.this[0].unique_id, "")
 }
 
-output "role_requires_mfa" {
-  description = "Whether IAM role requires MFA"
-  value       = var.role_requires_mfa
-}
-
 output "iam_instance_profile_arn" {
   description = "ARN of IAM instance profile"
   value       = try(aws_iam_instance_profile.this[0].arn, "")
@@ -41,9 +36,4 @@ output "iam_instance_profile_id" {
 output "iam_instance_profile_path" {
   description = "Path of IAM instance profile"
   value       = try(aws_iam_instance_profile.this[0].path, "")
-}
-
-output "role_sts_externalid" {
-  description = "STS ExternalId condition value to use with a role"
-  value       = var.role_sts_externalid
 }
