@@ -155,84 +155,42 @@ resource "aws_iam_role" "this" {
   tags = var.tags
 }
 
-resource "aws_iam_role_policy_attachment" "custom" {
-  count = var.create_role ? length(var.custom_role_policy_arns) : 0
+resource "aws_iam_role_policy_attachment" "this" {
+  for_each = var.create_role ? var.role_policy_arns : {}
 
   role       = aws_iam_role.this[0].name
-  policy_arn = var.custom_role_policy_arns[count.index]
+  policy_arn = each.value
 }
 
-resource "aws_iam_role_policy_attachment" "admin" {
-  count      = var.create_role && var.attach_admin_policy ? 1 : 0
-  role       = aws_iam_role.this[0].name
-  policy_arn = var.admin_role_policy_arn
+resource "aws_iam_role_policy" "inline" {
+  count = local.create_iam_role_inline_policy ? 1 : 0
+
+  name = "${aws_iam_role.this[0].name}-inline"
+  role = aws_iam_role.this[0].id
+
+  policy = data.aws_iam_policy_document.inline[0].json
 }
 
-resource "aws_iam_role_policy_attachment" "poweruser" {
-  count      = var.create_role && var.attach_poweruser_policy ? 1 : 0
-  role       = aws_iam_role.this[0].name
-  policy_arn = var.poweruser_role_policy_arn
-}
-
-resource "aws_iam_role_policy_attachment" "readonly" {
-  count      = var.create_role && var.attach_readonly_policy ? 1 : 0
-  role       = aws_iam_role.this[0].name
-  policy_arn = var.readonly_role_policy_arn
-}
-
-resource "aws_iam_instance_profile" "this" {
-  count = var.create_role && var.create_instance_profile ? 1 : 0
-  name  = var.role_name
-  path  = var.role_path
-  role  = aws_iam_role.this[0].name
-  tags  = var.tags
-}
-
-# Inline Policy
 data "aws_iam_policy_document" "inline" {
   count = local.create_iam_role_inline_policy ? 1 : 0
 
   dynamic "statement" {
     for_each = var.inline_policy_statements
     content {
-      sid           = try(statement.value.sid, null)
-      actions       = try(statement.value.actions, null)
-      not_actions   = try(statement.value.not_actions, null)
-      effect        = try(statement.value.effect, null)
-      resources     = try(statement.value.resources, null)
-      not_resources = try(statement.value.not_resources, null)
+      sid    = try(statement.value.sid, null)
+      effect = statement.value.effect
 
-      dynamic "principals" {
-        for_each = try(statement.value.principals, [])
-        content {
-          type        = principals.value.type
-          identifiers = principals.value.identifiers
-        }
-      }
-
-      dynamic "not_principals" {
-        for_each = try(statement.value.not_principals, [])
-        content {
-          type        = not_principals.value.type
-          identifiers = not_principals.value.identifiers
-        }
-      }
+      actions   = statement.value.actions
+      resources = try(statement.value.resources, null)
 
       dynamic "condition" {
         for_each = try(statement.value.conditions, [])
         content {
           test     = condition.value.test
-          values   = condition.value.values
           variable = condition.value.variable
+          values   = condition.value.values
         }
       }
     }
   }
-}
-
-resource "aws_iam_role_policy" "inline" {
-  count  = local.create_iam_role_inline_policy ? 1 : 0
-  role   = aws_iam_role.this[0].name
-  name   = "${try(coalesce(var.role_name, var.role_name_prefix), "")}_inline"
-  policy = data.aws_iam_policy_document.inline[0].json
 }

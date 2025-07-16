@@ -182,3 +182,15 @@ variable "allow_self_assume_role" {
   type        = bool
   default     = false
 }
+
+variable "role_policy_arns" {
+  description = "Map of policy ARNs to attach to the IAM role"
+  type        = map(string)
+  default     = {}
+}
+
+variable "trusted_role_services" {
+  description = "List of AWS service principals (ex: lambda.amazonaws.com) que podem assumir esta role"
+  type        = list(string)
+  default     = []
+}
