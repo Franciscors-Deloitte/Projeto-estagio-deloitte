@@ -1,3 +1,7 @@
+##################################
+# General Configuration
+##################################
+
 variable "create" {
   description = "Whether to create the RDS instance"
   type        = bool
@@ -9,13 +13,18 @@ variable "identifier" {
   type        = string
 }
 
+##################################
+# DB Instance Settings
+##################################
+
 variable "allocated_storage" {
-  description = "The amount of allocated storage in gibibytes"
+  description = "The amount of allocated storage in gigabytes"
   type        = number
+  default     = 20
 }
 
 variable "storage_type" {
-  description = "The storage type to be associated with the RDS instance"
+  description = "One of standard, gp2, or io1"
   type        = string
   default     = "gp2"
 }
@@ -28,6 +37,7 @@ variable "engine" {
 variable "engine_version" {
   description = "The version of the database engine"
   type        = string
+  default     = null
 }
 
 variable "instance_class" {
@@ -36,19 +46,21 @@ variable "instance_class" {
 }
 
 variable "db_name" {
-  description = "The name of the database to create"
+  description = "Name of the database to create"
   type        = string
+  default     = null
 }
 
 variable "username" {
   description = "Username for the master DB user"
   type        = string
+  default     = null
 }
 
 variable "password" {
   description = "Password for the master DB user"
   type        = string
-  sensitive   = true
+  default     = null
 }
 
 variable "port" {
@@ -57,8 +69,12 @@ variable "port" {
   default     = 5432
 }
 
+##################################
+# Networking and Security
+##################################
+
 variable "multi_az" {
-  description = "Specifies if the RDS instance is multi-AZ"
+  description = "If true, create a multi-AZ deployment"
   type        = bool
   default     = false
 }
@@ -70,13 +86,15 @@ variable "publicly_accessible" {
 }
 
 variable "db_subnet_group_name" {
-  description = "The DB subnet group to associate with this RDS instance"
+  description = "Subnet group to associate with the RDS instance"
   type        = string
+  default     = null
 }
 
 variable "vpc_security_group_ids" {
-  description = "List of VPC security groups to assign to the RDS instance"
+  description = "List of VPC security groups to associate"
   type        = list(string)
+  default     = []
 }
 
 variable "parameter_group_name" {
@@ -91,6 +109,10 @@ variable "option_group_name" {
   default     = null
 }
 
+##################################
+# Backup and Maintenance
+##################################
+
 variable "backup_retention_period" {
   description = "The days to retain backups for"
   type        = number
@@ -100,53 +122,83 @@ variable "backup_retention_period" {
 variable "backup_window" {
   description = "Preferred backup window"
   type        = string
-  default     = "03:00-04:00"
+  default     = null
 }
 
 variable "maintenance_window" {
-  description = "The window to perform maintenance in"
+  description = "Preferred maintenance window"
   type        = string
-  default     = "Mon:00:00-Mon:03:00"
+  default     = null
 }
 
+##################################
+# Final Snapshot and Deletion
+##################################
+
 variable "skip_final_snapshot" {
-  description = "Determines whether a final DB snapshot is created before the DB instance is deleted"
+  description = "Whether to skip taking a final DB snapshot before deletion"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "final_snapshot_identifier" {
-  description = "The name of your final DB snapshot when this DB instance is deleted"
+  description = "The name of your final DB snapshot"
   type        = string
   default     = null
 }
 
 variable "deletion_protection" {
-  description = "The database can't be deleted when this value is set to true"
+  description = "If the DB instance should have deletion protection enabled"
   type        = bool
   default     = false
 }
+
+##################################
+# Monitoring and Performance
+##################################
 
 variable "apply_immediately" {
-  description = "Specifies whether any database modifications are applied immediately"
+  description = "Whether to apply changes immediately"
   type        = bool
   default     = false
 }
 
-variable "storage_encrypted" {
-  description = "Specifies whether the DB instance is encrypted"
-  type        = bool
-  default     = false
+variable "monitoring_interval" {
+  description = "The interval, in seconds, between enhanced monitoring metrics"
+  type        = number
+  default     = 0
 }
 
-variable "kms_key_id" {
-  description = "The ARN for the KMS encryption key"
+variable "monitoring_role_arn" {
+  description = "ARN of the IAM role used for enhanced monitoring"
   type        = string
   default     = null
 }
 
+variable "performance_insights_enabled" {
+  description = "Specifies whether Performance Insights is enabled"
+  type        = bool
+  default     = false
+}
+
+variable "performance_insights_kms_key_id" {
+  description = "The ARN of the KMS key for Performance Insights"
+  type        = string
+  default     = null
+}
+
+variable "enabled_cloudwatch_logs_exports" {
+  description = "Set of log types to export to CloudWatch"
+  type        = list(string)
+  default     = []
+}
+
+##################################
+# Tags
+##################################
+
 variable "tags" {
-  description = "A map of tags to assign to the resource"
+  description = "A map of tags to assign to resources"
   type        = map(string)
   default     = {}
 }
