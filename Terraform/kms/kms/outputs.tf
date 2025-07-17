@@ -14,6 +14,7 @@ output "key_id" {
 output "key_policy" {
   description = "The IAM resource policy set on the KMS key"
   value       = try(aws_kms_key.this[0].policy, null)
+  sensitive = true
 }
 
 ##################################
