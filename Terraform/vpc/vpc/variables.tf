@@ -1,67 +1,37 @@
+##################################
+# General
+##################################
+
 variable "create" {
-  description = "Determines whether resources will be created"
+  description = "Whether to create the VPC resources"
   type        = bool
   default     = true
 }
 
-variable "endpoints" {
-  description = "Map of interface and/or gateway endpoints and their configurations"
-  type        = any
-  default     = {}
+variable "name" {
+  description = "Name of the VPC"
+  type        = string
+}
+
+variable "use_name_prefix" {
+  description = "Whether to use the name as prefix"
+  type        = bool
+  default     = false
 }
 
 variable "tags" {
-  description = "Map of tags to assign to all resources"
+  description = "Tags to apply to all resources"
   type        = map(string)
   default     = {}
 }
 
-variable "azs" {
-  description = "List of availability zones to use"
-  type        = list(string)
-  default     = []
-}
+##################################
+# VPC Configuration
+##################################
 
 variable "cidr" {
   description = "CIDR block for the VPC"
   type        = string
-  default     = ""
-}
-
-variable "create_igw" {
-  description = "Whether to create an Internet Gateway"
-  type        = bool
-  default     = true
-}
-
-variable "database_subnet_ipv6_prefixes" {
-  description = "List of IPv6 CIDR prefixes for database subnets"
-  type        = list(string)
-  default     = []
-}
-
-variable "database_subnets" {
-  description = "List of database subnet CIDRs"
-  type        = list(string)
-  default     = []
-}
-
-variable "elasticache_subnet_ipv6_prefixes" {
-  description = "List of IPv6 CIDR prefixes for ElastiCache subnets"
-  type        = list(string)
-  default     = []
-}
-
-variable "elasticache_subnets" {
-  description = "List of ElastiCache subnet CIDRs"
-  type        = list(string)
-  default     = []
-}
-
-variable "enable_dns_hostnames" {
-  description = "Enable DNS hostnames in the VPC"
-  type        = bool
-  default     = true
 }
 
 variable "enable_dns_support" {
@@ -70,50 +40,35 @@ variable "enable_dns_support" {
   default     = true
 }
 
-variable "enable_nat_gateway" {
-  description = "Whether to create NAT Gateway(s)"
+variable "enable_dns_hostnames" {
+  description = "Enable DNS hostnames in the VPC"
   type        = bool
-  default     = false
+  default     = true
 }
 
-variable "name" {
-  description = "Base name used for resources"
+variable "instance_tenancy" {
+  description = "Tenancy option for instances launched into the VPC"
   type        = string
-  default     = ""
+  default     = "default"
 }
 
-variable "private_subnet_ipv6_prefixes" {
-  description = "List of IPv6 CIDR prefixes for private subnets"
+##################################
+# Subnets
+##################################
+
+variable "availability_zones" {
+  description = "List of availability zones to use"
+  type        = list(string)
+}
+
+variable "public_subnets" {
+  description = "List of public subnet CIDR blocks"
   type        = list(string)
   default     = []
 }
 
 variable "private_subnets" {
-  description = "List of private subnet CIDRs"
-  type        = list(string)
-  default     = []
-}
-
-variable "public_subnet_ipv6_prefixes" {
-  description = "List of IPv6 CIDR prefixes for public subnets"
-  type        = list(string)
-  default     = []
-}
-
-variable "public_subnets" {
-  description = "List of public subnet CIDRs"
-  type        = list(string)
-  default     = []
-}
-
-variable "redshift_subnet_ipv6_prefixes" {
-  description = "List of IPv6 CIDR prefixes for Redshift subnets"
-  type        = list(string)
-  default     = []
-}
-
-variable "redshift_subnets" {
-  description = "List of Redshift subnet CIDRs"
+  description = "List of private subnet CIDR blocks"
   type        = list(string)
   default     = []
 }
