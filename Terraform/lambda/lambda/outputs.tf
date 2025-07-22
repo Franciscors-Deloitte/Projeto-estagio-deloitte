@@ -1,3 +1,8 @@
+locals {
+  log_group_name = "/aws/lambda/${var.function_name}"
+  log_group_arn  = "arn:${data.aws_partition.current.partition}:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${local.log_group_name}:*"
+}
+
 # Lambda Function
 output "lambda_function_arn" {
   description = "The ARN of the Lambda Function"

@@ -2,10 +2,10 @@
 
 | Name | Type |
 |------|------|
-| [aws_instance.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/instance) | resource |
-| [aws_ebs_volume.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/volume) | resource |
-| [aws_volume_attachment.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/attachment) | resource |
-| [aws_eip.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eip) | resource |
+| aws_instance.this | resource |
+| aws_ebs_volume.this | resource |
+| aws_volume_attachment.this | resource |
+| aws_eip.this| resource |
 
 
 ## Inputs

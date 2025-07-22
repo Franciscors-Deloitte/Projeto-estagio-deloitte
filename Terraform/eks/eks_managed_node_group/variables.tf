@@ -110,28 +110,6 @@ variable "max_unavailable" {
 }
 
 ##################################
-# Optional EC2 behaviors
-##################################
-
-variable "hibernation_options" {
-  description = "Enable hibernation"
-  type        = bool
-  default     = false
-}
-
-variable "iam_instance_profile" {
-  description = "IAM instance profile name"
-  type        = string
-  default     = null
-}
-
-variable "instance_initiated_shutdown_behavior" {
-  description = "EC2 shutdown behavior"
-  type        = string
-  default     = null
-}
-
-##################################
 # Dependencies
 ##################################
 
