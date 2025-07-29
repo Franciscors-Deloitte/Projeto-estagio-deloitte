@@ -10,6 +10,7 @@ No Modules.
 | aws_region.current | Data Source |
 | aws_caller_identity.current | Data Source |
 | aws_lambda_function.this | resource |
+| aws_lambda_permission.allow_s3 | resource |
 | external.archive_prepare | Data Source |
 | local_file.archive_plan | resource |
 | null_resource.archive | resource |
@@ -35,6 +36,10 @@ No Modules.
 | s3_prefix | S3 key prefix to store the Lambda package | `string` | `null` | no |
 | environment_variables | Map of environment variables for the Lambda function | `map(string)` | `{` | no |
 | tags | Tags to apply to the Lambda function | `map(string)` | `{` | no |
+| vpc_subnet_ids | List of VPC subnet IDs for the Lambda function | `list(string)` | `null` | no |
+| vpc_security_group_ids | List of VPC security group IDs for the Lambda function | `list(string)` | `null` | no |
+| allow_s3_invocation | Whether to allow the Lambda to be triggered by S3 | `bool` | `false` | no |
+| s3_bucket_arn | ARN of the S3 bucket allowed to invoke the Lambda | `string` | `null` | no |
 | create_package | Whether to create the Lambda package locally | `bool` | `true` | no |
 | source_path | Path to the source code directory of the Lambda function | `string` | `null` | no |
 | artifacts_dir | Local directory where packaged artifacts are stored | `string` | `".terraform-lambda-artifacts"` | no |

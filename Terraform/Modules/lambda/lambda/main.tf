@@ -41,7 +41,26 @@ resource "aws_lambda_function" "this" {
     variables = var.environment_variables
   }
 
+  vpc_config {
+    subnet_ids         = var.vpc_subnet_ids
+    security_group_ids = var.vpc_security_group_ids
+  }
+
   tags = merge(var.tags, {
     Name = replace(var.function_name, ".", "-")
   })
+}
+
+##################################
+# Lambda permission for S3 invoke
+##################################
+
+resource "aws_lambda_permission" "allow_s3" {
+  count         = var.allow_s3_invocation ? 1 : 0
+
+  statement_id  = "AllowExecutionFromS3"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.this[0].function_name
+  principal     = "s3.amazonaws.com"
+  source_arn    = var.s3_bucket_arn
 }

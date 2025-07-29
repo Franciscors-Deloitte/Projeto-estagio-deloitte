@@ -172,3 +172,8 @@ output "s3_object" {
     version_id = local.s3_object_version
   }
 }
+
+output "lambda_permission_statement_id" {
+  description = "The statement ID of the Lambda permission allowing S3 to invoke the function"
+  value       = try(aws_lambda_permission.allow_s3[0].statement_id, null)
+}

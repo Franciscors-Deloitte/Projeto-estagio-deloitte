@@ -100,6 +100,30 @@ variable "tags" {
   default     = {}
 }
 
+variable "vpc_subnet_ids" {
+  description = "List of VPC subnet IDs for the Lambda function"
+  type        = list(string)
+  default     = null
+}
+
+variable "vpc_security_group_ids" {
+  description = "List of VPC security group IDs for the Lambda function"
+  type        = list(string)
+  default     = null
+}
+
+variable "allow_s3_invocation" {
+  description = "Whether to allow S3 to invoke the Lambda function"
+  type        = bool
+  default     = false
+}
+
+variable "s3_bucket_arn" {
+  description = "ARN of the S3 bucket allowed to invoke the Lambda function"
+  type        = string
+  default     = null
+}
+
 ##################################
 # Package
 ##################################
