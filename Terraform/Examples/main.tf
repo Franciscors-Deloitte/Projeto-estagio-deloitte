@@ -461,3 +461,126 @@ module "alb" {
     Project     = "infra-example"
   }
 }
+
+##################################
+# API Gateway
+##################################
+
+module "api_gateway" {
+  source = "../Modules/api_gateway/api_gateway"
+
+  name          = "example-api"
+  description   = "API Gateway de exemplo"
+  protocol_type = "HTTP"
+
+  stage_name  = "dev"
+  auto_deploy = true
+
+  create_routes_and_integrations = true
+
+  routes = [
+    {
+      route_key              = "GET /hello"
+      integration_type       = "AWS_PROXY"
+      integration_uri        = module.lambda_function.lambda_function_invoke_arn
+      integration_method     = "POST"
+      payload_format_version = "2.0"
+    }
+  ]
+
+  # CloudWatch Logging (opcional)
+  # access_log_destination_arn = aws_cloudwatch_log_group.api_gw_logs.arn
+  # access_log_format = jsonencode({
+  #   requestId       = "$context.requestId",
+  #   ip              = "$context.identity.sourceIp",
+  #   requestTime     = "$context.requestTime",
+  #   httpMethod      = "$context.httpMethod",
+  #   routeKey        = "$context.routeKey",
+  #   status          = "$context.status",
+  #   integrationErrorMessage = "$context.integrationErrorMessage"
+  # })
+
+  tags = {
+    Environment = "dev"
+    Project     = "infra-example"
+  }
+}
+
+##################################
+# CloudTrail
+##################################
+
+##################################
+# IAM Role for CloudTrail
+##################################
+
+module "iam_assumable_role_cloudtrail" {
+  source = "../Modules/iam/iam_assumable_role"
+
+  create_role = true
+  role_name   = "cloudtrail_logs_role"
+
+  trusted_role_services = [
+    "cloudtrail.amazonaws.com"
+  ]
+
+  allow_self_assume_role = false
+  role_requires_mfa      = false
+  max_session_duration   = 3600
+
+  tags = {
+    Environment = "dev"
+    Project     = "infra-example"
+  }
+}
+
+##################################
+# CloudTrail
+##################################
+
+module "cloudtrail" {
+  source = "../Modules/cloudtrail"
+
+  name                          = "example-cloudtrail"
+  s3_bucket_name                = module.s3_bucket.s3_bucket_id
+  s3_key_prefix                 = "cloudtrail/"
+  include_global_service_events = true
+  is_multi_region_trail         = true
+  enable_log_file_validation    = true
+  enable_logging                = true
+  is_organization_trail         = false
+  kms_key_id                    = module.kms.key_arn
+
+  # Integração com CloudWatch Logs (ativar mais tarde)
+  # enable_cloudwatch_logs    = true
+  # cloudwatch_logs_role_arn  = module.iam_assumable_role_cloudtrail.iam_role_arn
+  # cloudwatch_logs_group_arn = <ARN_DO_LOG_GROUP>
+
+  tags = {
+    Environment = "dev"
+    Project     = "infra-example"
+  }
+}
+
+##################################
+# CloudWatch
+##################################
+
+##################################
+# CloudWatch Log Group
+##################################
+
+module "cloudtrail_log_group" {
+  source = "../Modules/monitoring/cloud_watch/log_group"
+
+  name              = "/aws/cloudtrail/logs"
+  retention_in_days = 30
+  kms_key_id      = module.kms.key_arn
+  log_group_class = "STANDARD"
+  skip_destroy    = true
+
+  tags = {
+    Environment = "dev"
+    Project     = "infra-example"
+  }
+}
