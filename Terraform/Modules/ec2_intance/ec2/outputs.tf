@@ -1,3 +1,8 @@
+output "id" {
+  description = "The ID of the EC2 instance"
+  value       = aws_instance.this[0].id
+}
+
 output "arn" {
   description = "The ARN of the instance"
   value       = aws_instance.this[0].arn

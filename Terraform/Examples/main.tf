@@ -246,31 +246,6 @@ module "iam_assumable_role_services" {
   max_session_duration   = 3600
 }
 
-##################################
-# IAM Role for Service Accounts (EKS)
-##################################
-
-# Ainda por corrigir
-
-module "iam_role_for_service_accounts_eks" {
-  source = "../Modules/iam/iam_role_for_service_accounts_eks"
-
-  create_role      = true
-  iam_role_name    = "eks_service_role"
-
-  attach_load_balancer_controller_policy = true
-  attach_vpc_cni_policy                  = true
-
-  oidc_providers = {
-    "default" = {
-      provider_arn = "arn:aws:iam::<ACCOUNT_ID>:oidc-provider/oidc.eks.eu-west-2.amazonaws.com/id/<OIDC_ID>"
-      namespace_service_accounts = [
-        "kube-system:aws-node",
-        "kube-system:aws-load-balancer-controller"
-      ]
-    }
-  }
-}
 
 ##################################
 # KMS Key
@@ -401,7 +376,7 @@ module "ec2_instance" {
 ##################################
 
 module "rds" {
-  source = "../Modules/rds"
+  source = "../Modules/data_base/rds/rds"
 
   identifier                    = "example-rds"
   allocated_storage             = 20
@@ -511,22 +486,28 @@ module "api_gateway" {
 ##################################
 
 ##################################
-# IAM Role for CloudTrail
+# IAM Role for CloudTrail & CloudWatch Logs
 ##################################
 
-module "iam_assumable_role_cloudtrail" {
+module "iam_assumable_role_logs" {
   source = "../Modules/iam/iam_assumable_role"
 
   create_role = true
-  role_name   = "cloudtrail_logs_role"
+  role_name   = "cloudtrail_cloudwatch_logs_role"
 
   trusted_role_services = [
-    "cloudtrail.amazonaws.com"
+    "cloudtrail.amazonaws.com",
+    "logs.amazonaws.com"
   ]
 
   allow_self_assume_role = false
   role_requires_mfa      = false
   max_session_duration   = 3600
+
+  custom_role_policy_arns = [
+    # Permite que o serviço de logs publique dados para o destino (ex: Lambda/Kinesis)
+    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  ]
 
   tags = {
     Environment = "dev"
@@ -539,7 +520,7 @@ module "iam_assumable_role_cloudtrail" {
 ##################################
 
 module "cloudtrail" {
-  source = "../Modules/cloudtrail"
+  source = "../Modules/monitoring/cloud_trail/ct"
 
   name                          = "example-cloudtrail"
   s3_bucket_name                = module.s3_bucket.s3_bucket_id
@@ -551,10 +532,10 @@ module "cloudtrail" {
   is_organization_trail         = false
   kms_key_id                    = module.kms.key_arn
 
-  # Integração com CloudWatch Logs (ativar mais tarde)
-  # enable_cloudwatch_logs    = true
-  # cloudwatch_logs_role_arn  = module.iam_assumable_role_cloudtrail.iam_role_arn
-  # cloudwatch_logs_group_arn = <ARN_DO_LOG_GROUP>
+  
+  enable_cloudwatch_logs    = true
+  cloudwatch_logs_role_arn  = module.iam_assumable_role_logs.iam_role_arn
+  cloudwatch_logs_group_arn = module.log_group.cloudwatch_log_group_arn
 
   tags = {
     Environment = "dev"
@@ -567,10 +548,10 @@ module "cloudtrail" {
 ##################################
 
 ##################################
-# CloudWatch Log Group
+# Log Group
 ##################################
 
-module "cloudtrail_log_group" {
+module "log_group" {
   source = "../Modules/monitoring/cloud_watch/log_group"
 
   name              = "/aws/cloudtrail/logs"
@@ -578,6 +559,342 @@ module "cloudtrail_log_group" {
   kms_key_id      = module.kms.key_arn
   log_group_class = "STANDARD"
   skip_destroy    = true
+
+  tags = {
+    Environment = "dev"
+    Project     = "infra-example"
+  }
+}
+
+##################################
+# Log Stream
+##################################
+
+module "log_stream" {
+  source = "../Modules/monitoring/cloud_watch/log_stream"
+
+  name           = "app-log-stream"
+  log_group_name = module.log_group.cloudwatch_log_group_name
+}
+
+##################################
+# Log Subscription Filter
+##################################
+
+module "log_subscription_filter" {
+  source = "../Modules/monitoring/cloud_watch/log_subscription_filter"
+
+  name              = "cloudwatch-to-lambda"
+  log_group_name    = module.log_group.cloudwatch_log_group_name
+  destination_arn   = module.lambda_function.lambda_function_arn
+  role_arn          = module.iam_assumable_role_logs.iam_role_arn
+  filter_pattern    = "" # Aceita todos os logs
+
+}
+
+##################################
+# Metric Alarm - Lambda Errors
+##################################
+
+module "lambda_error_alarm" {
+  source = "../Modules/monitoring/cloud_watch/metric_alarm"
+
+  alarm_name          = "lambda-error-alarm"
+  alarm_description   = "Alarme para erros na função Lambda"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 2
+  threshold           = 1
+
+  metric_name = "Errors"
+  namespace   = "AWS/Lambda"
+  period      = 60
+  statistic   = "Sum"
+
+  dimensions = {
+    FunctionName = module.lambda_function.lambda_function_name
+  }
+
+  treat_missing_data = "notBreaching"
+
+  tags = {
+    Environment = "dev"
+    Project     = "infra-example"
+  }
+}
+
+##################################
+# Metric Alarm - EC2 CPU Utilization
+##################################
+
+module "ec2_cpu_alarm" {
+  source = "../Modules/monitoring/cloud_watch/metric_alarm"
+
+  alarm_name          = "ec2-high-cpu"
+  alarm_description   = "Dispara se a CPU da instância EC2 exceder 80%"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 2
+  threshold           = 80
+
+  metric_name = "CPUUtilization"
+  namespace   = "AWS/EC2"
+  period      = 60
+  statistic   = "Average"
+
+  dimensions = {
+    InstanceId = module.ec2_instance.id
+  }
+
+  treat_missing_data = "notBreaching"
+
+  tags = {
+    Environment = "dev"
+    Project     = "infra-example"
+  }
+}
+
+##################################
+# Composite Alarm
+##################################
+
+module "composite_alarm" {
+  source = "../Modules/monitoring/cloud_watch/composite_alarm"
+
+  alarm_name        = "lambda-or-ec2-critical"
+  alarm_description = "Dispara se a Lambda falhar ou a EC2 estiver com CPU elevada"
+  actions_enabled   = true
+
+  alarm_rule = join(" ", [
+    "ALARM(\"${module.lambda_error_alarm.alarm_name}\")",
+    "OR",
+    "ALARM(\"${module.ec2_cpu_alarm.alarm_name}\")"
+  ])
+
+  tags = {
+    Environment = "dev"
+    Project     = "infra-example"
+  }
+}
+
+##################################
+# WAF Web ACL associado ao ALB
+##################################
+
+module "waf" {
+  source = "../Modules/waf/waf"
+
+  name        = "web-acl-example"
+  description = "Web ACL simples com bloqueio básico"
+  scope       = "REGIONAL"
+
+  associate_with_resource = true
+  resource_arn            = module.alb.arn
+
+  tags = {
+    Environment = "dev"
+    Project     = "infra-example"
+  }
+}
+
+##################################
+# EKS
+##################################
+
+##################################
+# IAM Policy para Acesso EKS
+##################################
+
+module "eks_admin_policy" {
+  source       = "../Modules/iam/iam_policy"
+  create_policy = true
+  name          = "eks-admin-policy"
+  description   = "Política para administração do EKS"
+  policy        = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = "eks:*",
+        Resource = "*"
+      }
+    ]
+  })
+  tags = {
+    Environment = "dev"
+    Project     = "infra-example"
+  }
+}
+
+##################################
+# IAM User para EKS
+##################################
+
+module "eks_user" {
+  source                         = "../Modules/iam/iam_user"
+  create_user                    = true
+  name                           = "eks-admin-user"
+  path                           = "/"
+  force_destroy                  = true
+  create_iam_user_login_profile = false
+  create_iam_access_key         = false
+
+  policy_arns = [module.eks_admin_policy.arn]
+
+  tags = {
+    Environment = "dev"
+    Project     = "infra-example"
+  }
+}
+
+##################################
+# IAM Role for EKS Cluster
+##################################
+
+module "iam_assumable_role_eks" {
+  source = "../Modules/iam/iam_assumable_role" 
+
+  create_role           = true
+  role_name             = "eks_cluster_role"
+  role_requires_mfa     = false
+  trusted_role_services = ["eks.amazonaws.com"] 
+
+  max_session_duration = 3600
+
+  tags = {
+    Environment = "dev"
+    Project     = "infra-example"
+  }
+}
+
+##################################
+# EKS Cluster
+##################################
+
+module "eks" {
+  source = "../Modules/eks/eks"
+
+  cluster_name                = "example-eks-cluster"
+  cluster_version             = "1.29"
+  cluster_ip_family           = "ipv4"
+  cluster_service_ipv4_cidr   = "10.100.0.0/16"
+
+  subnet_ids                  = module.vpc.private_subnet_ids
+  cluster_security_group_id   = module.security_group.security_group_id
+  cluster_additional_security_group_ids = []
+
+  cluster_endpoint_private_access       = true
+  cluster_endpoint_public_access        = true
+  cluster_endpoint_public_access_cidrs  = ["0.0.0.0/0"]
+
+  cluster_enabled_log_types             = ["api", "audit"]
+
+  kms_key_arn                 = module.kms.key_arn
+  cluster_encryption_config   = {}
+  encryption_resources        = []
+
+  iam_role_arn                = module.iam_assumable_role_eks.iam_role_arn
+
+  create_cni_ipv6_iam_policy  = false
+  dataplane_wait_duration     = "30s"
+
+  tags = {
+    Environment = "dev"
+    Project     = "infra-example"
+  }
+}
+
+##################################
+# EKS Managed Node Group
+##################################
+
+module "eks_managed_node_group" {
+  source = "../Modules/eks/eks_managed_node_group"
+
+  name           = "example-node-group"
+  cluster_name   = module.eks.cluster_name
+  node_role_arn  = module.iam_assumable_role_eks.iam_role_arn
+  subnet_ids     = module.vpc.private_subnet_ids
+
+  instance_types = ["t3.medium"]
+  desired_size   = 2
+  min_size       = 1
+  max_size       = 3
+  disk_size      = 20
+  capacity_type  = "ON_DEMAND"
+
+  version         = null
+  release_version = null
+  ami_type        = null
+
+  labels = {
+    role = "worker"
+  }
+
+  tags = {
+    Environment = "dev"
+    Project     = "infra-example"
+  }
+
+  depends_on = [
+    module.eks
+  ]
+}
+
+##################################
+# AWS Auth Mapping
+##################################
+
+module "aws_auth" {
+  source = "../Modules/eks/aws_auth"
+
+  create                      = true
+  create_aws_auth_configmap  = true
+
+  aws_auth_roles = [
+    {
+      rolearn = module.eks_managed_node_group.node_group_iam_role_arn
+      username = "system:node:{{EC2PrivateDNSName}}"
+      groups   = [
+        "system:bootstrappers",
+        "system:nodes"
+      ]
+    }
+  ]
+
+  aws_auth_users = [
+    {
+      userarn  = module.eks_user.iam_user_arn
+      username = "eks-admin"
+      groups   = ["system:masters"]
+    }
+  ]
+
+  aws_auth_accounts = []
+
+  labels = {
+    Environment = "dev"
+    Project     = "infra-example"
+  }
+}
+
+##############################################
+# IAM Role for Service Accounts (IRSA - EKS)
+##############################################
+
+module "irsa_for_external_dns" {
+  source = "../Modules/iam/iam_role_for_service_accounts_eks"
+
+  iam_role_name = module.iam_assumable_role_eks.iam_role_name
+
+  oidc_providers = {
+    eks = {
+      provider_arn = module.eks.cluster_iam_role_arn
+      namespace_service_accounts = [
+        "kube-system:external-dns"
+      ]
+    }
+  }
+
+  attach_external_dns_policy = true
 
   tags = {
     Environment = "dev"

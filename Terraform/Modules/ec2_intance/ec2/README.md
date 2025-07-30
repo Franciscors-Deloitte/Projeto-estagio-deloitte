@@ -40,6 +40,7 @@
 
 | Name | Description |
 |------|-------------|
+| id | The ID of the EC2 instance |
 | arn | The ARN of the instance |
 | instance_state | The state of the instance |
 | private_ip | The private IP address assigned to the instance |

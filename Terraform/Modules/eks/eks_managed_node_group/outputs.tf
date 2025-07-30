@@ -31,3 +31,8 @@ output "node_group_labels" {
   description = "Map of labels applied to the node group"
   value       = try(aws_eks_node_group.this[0].labels, {})
 }
+
+output "node_group_iam_role_arn" {
+  description = "IAM Role ARN associada ao EKS Managed Node Group"
+  value       = try(aws_eks_node_group.this[0].node_role_arn, null)
+}

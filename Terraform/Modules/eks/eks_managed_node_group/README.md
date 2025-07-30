@@ -41,3 +41,4 @@ No Modules.
 | node_group_autoscaling_group_names | List of the autoscaling group names |
 | node_group_status | Status of the EKS Node Group |
 | node_group_labels | Map of labels applied to the node group |
+| node_group_iam_role_arn | IAM Role ARN associada ao EKS Managed Node Group |
