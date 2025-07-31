@@ -72,5 +72,5 @@ variable "access_logs" {
     prefix  = optional(string)
     enabled = optional(bool)
   })
-  default = {}
+  default = null
 }

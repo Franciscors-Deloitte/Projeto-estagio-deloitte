@@ -16,19 +16,34 @@ variable "eventbridge" {
 }
 
 variable "lambda_notifications" {
-  description = "Map of Lambda notification configurations"
-  type        = any
-  default     = {}
+  description = "Map of Lambda function notifications and their configuration"
+  type = map(object({
+    function_arn  = string
+    events        = list(string)
+    filter_prefix = optional(string)
+    filter_suffix = optional(string)
+  }))
+  default = {}
 }
 
 variable "sqs_notifications" {
-  description = "Map of SQS notification configurations"
-  type        = any
-  default     = {}
+  description = "Map of SQS queue notifications and their configuration"
+  type = map(object({
+    queue_arn     = string
+    events        = list(string)
+    filter_prefix = optional(string)
+    filter_suffix = optional(string)
+  }))
+  default = {}
 }
 
 variable "sns_notifications" {
-  description = "Map of SNS notification configurations"
-  type        = any
-  default     = {}
+  description = "Map of SNS topic notifications and their configuration"
+  type = map(object({
+    topic_arn     = string
+    events        = list(string)
+    filter_prefix = optional(string)
+    filter_suffix = optional(string)
+  }))
+  default = {}
 }

@@ -48,6 +48,9 @@ resource "aws_db_instance" "this" {
   engine_lifecycle_support = var.engine_lifecycle_support
   instance_class         = var.instance_class
 
+  allocated_storage      = var.allocated_storage
+  storage_type           = var.storage_type
+
   db_name                = var.db_name
   username               = local.is_replica ? null : var.username
   password               = local.is_replica ? null : var.password

@@ -20,7 +20,7 @@ resource "aws_eks_node_group" "this" {
   capacity_type  = var.capacity_type
   disk_size      = var.disk_size
   ami_type       = var.ami_type
-  version        = var.version
+  version        = var.kubernetes_version
   release_version = var.release_version
 
   labels = var.labels
@@ -42,5 +42,7 @@ resource "aws_eks_node_group" "this" {
     max_unavailable = var.max_unavailable
   }
 
-  depends_on = var.depends_on
+  depends_on = [
+  aws_iam_role.this
+]
 }

@@ -85,7 +85,7 @@ variable "max_size" {
 # Updates and versioning
 ##################################
 
-variable "version" {
+variable "kubernetes_version" {
   description = "Kubernetes version"
   type        = string
   default     = null
@@ -107,14 +107,4 @@ variable "max_unavailable" {
   description = "Max unavailable nodes during update"
   type        = number
   default     = 1
-}
-
-##################################
-# Dependencies
-##################################
-
-variable "depends_on" {
-  description = "Explicit resource dependencies"
-  type        = list(any)
-  default     = []
 }

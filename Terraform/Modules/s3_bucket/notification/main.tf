@@ -1,5 +1,11 @@
 data "aws_partition" "this" {}
 
+locals {
+  lambda_dependencies = [
+    for k, v in var.lambda_notifications : aws_lambda_permission.this[k].id
+  ]
+}
+
 resource "aws_s3_bucket_notification" "this" {
   count  = var.create ? 1 : 0
   bucket = var.bucket
@@ -42,9 +48,8 @@ resource "aws_s3_bucket_notification" "this" {
     }
   }
 
-  depends_on = concat(
-    [for k, v in var.lambda_notifications : aws_lambda_permission.allow[k]],
-    [for k, v in var.sqs_notifications : aws_sqs_queue_policy.allow[k]],
-    [for k, v in var.sns_notifications : aws_sns_topic_policy.allow[k]]
-  )
+  depends_on = [
+    aws_lambda_permission.this,
+    local.lambda_dependencies
+  ]
 }

@@ -376,39 +376,45 @@ module "ec2_instance" {
 ##################################
 
 module "rds" {
-  source = "../Modules/data_base/rds/rds"
+  source = "../Modules/data_base/rds/db_instance"
 
-  identifier                    = "example-rds"
-  allocated_storage             = 20
-  storage_type                  = "gp2"
-  engine                        = "postgres"
-  engine_version                = "15.3"
-  instance_class                = "db.t3.micro"
-  db_name                       = "exampledb"
-  username                      = "adminuser"
-  password                      = "strongpassword123"
-  port                          = 5432
+  identifier        = "example-rds"
+  engine            = "postgres"
+  engine_version    = "15.3"
+  instance_class    = "db.t3.micro"
 
-  multi_az                      = false
-  publicly_accessible           = false
-  db_subnet_group_name          = module.vpc.db_subnet_group_name
-  vpc_security_group_ids        = [module.security_group.security_group_id]
-  parameter_group_name          = null
-  option_group_name             = null
-  backup_retention_period       = 7
-  backup_window                 = "03:00-04:00"
-  maintenance_window            = "Mon:04:00-Mon:05:00"
-  skip_final_snapshot           = true
-  final_snapshot_identifier     = null
-  deletion_protection           = false
-  apply_immediately             = true
+  allocated_storage = 20
+  storage_type      = "gp2"
 
-  monitoring_role_arn           = module.iam_assumable_role_services.iam_role_arn
-  monitoring_interval           = 60
+  db_name   = "exampledb"
+  username  = "adminuser"
+  password  = "strongpassword123"
+  port      = 5432
 
-  performance_insights_enabled  = true
-  performance_insights_kms_key_id = module.kms.key_arn
-  enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
+  multi_az            = false
+  publicly_accessible = false
+
+  db_subnet_group_name   = module.vpc.db_subnet_group_name
+  vpc_security_group_ids = [module.security_group.security_group_id]
+
+  parameter_group_name = null
+  option_group_name    = null
+
+  backup_retention_period = 7
+  backup_window           = "03:00-04:00"
+  maintenance_window      = "Mon:04:00-Mon:05:00"
+
+  skip_final_snapshot = true
+
+  deletion_protection = false
+  apply_immediately   = true
+
+  monitoring_interval   = 60
+  monitoring_role_arn   = module.iam_assumable_role_services.iam_role_arn
+
+  performance_insights_enabled      = true
+  performance_insights_kms_key_id  = module.kms.key_arn
+  enabled_cloudwatch_logs_exports  = ["postgresql", "upgrade"]
 
   tags = {
     Environment = "dev"
@@ -430,6 +436,12 @@ module "alb" {
 
   subnets         = module.vpc.public_subnet_ids
   security_groups = [module.security_group.security_group_id]
+
+  access_logs = {
+  bucket  = module.s3_bucket.s3_bucket_id
+  prefix  = "alb-logs"
+  enabled = true
+}
 
   tags = {
     Environment = "dev"
@@ -463,17 +475,16 @@ module "api_gateway" {
     }
   ]
 
-  # CloudWatch Logging (opcional)
-  # access_log_destination_arn = aws_cloudwatch_log_group.api_gw_logs.arn
-  # access_log_format = jsonencode({
-  #   requestId       = "$context.requestId",
-  #   ip              = "$context.identity.sourceIp",
-  #   requestTime     = "$context.requestTime",
-  #   httpMethod      = "$context.httpMethod",
-  #   routeKey        = "$context.routeKey",
-  #   status          = "$context.status",
-  #   integrationErrorMessage = "$context.integrationErrorMessage"
-  # })
+  access_log_destination_arn = module.log_group.cloudwatch_log_group_arn
+  access_log_format = jsonencode({
+    requestId                = "$context.requestId",
+    ip                       = "$context.identity.sourceIp",
+    requestTime              = "$context.requestTime",
+    httpMethod               = "$context.httpMethod",
+    routeKey                 = "$context.routeKey",
+    status                   = "$context.status",
+    integrationErrorMessage  = "$context.integrationErrorMessage"
+  })
 
   tags = {
     Environment = "dev"
@@ -820,10 +831,6 @@ module "eks_managed_node_group" {
   max_size       = 3
   disk_size      = 20
   capacity_type  = "ON_DEMAND"
-
-  version         = null
-  release_version = null
-  ami_type        = null
 
   labels = {
     role = "worker"

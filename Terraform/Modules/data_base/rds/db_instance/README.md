@@ -45,7 +45,10 @@ No Modules.
 | skip_final_snapshot | Skip final snapshot on instance deletion | `bool` | `false` | no |
 | deletion_protection | Enable deletion protection on the DB instance | `bool` | `false` | no |
 | apply_immediately | Whether to apply modifications immediately | `bool` | `false` | no |
-| tags | Tags to apply to all resources | `map(string)` | `{` | no |
+| allocated_storage | The amount of allocated storage in gigabytes | `number` | `null` | no |
+| storage_type | One of `standard`, `gp2`, or `io1` | `string` | `null` | no |
+| final_snapshot_identifier | The name for the final DB snapshot on deletion | `string` | `null` | no |
+| tags | Tags to apply to all resources | `map(string)` | `{}` | no |
 
 ## Outputs
 

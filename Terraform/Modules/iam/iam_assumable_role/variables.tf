@@ -188,9 +188,3 @@ variable "role_policy_arns" {
   type        = map(string)
   default     = {}
 }
-
-variable "trusted_role_services" {
-  description = "List of AWS service principals (ex: lambda.amazonaws.com) que podem assumir esta role"
-  type        = list(string)
-  default     = []
-}
