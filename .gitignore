@@ -1,0 +1,35 @@
+# Ignorar diretório de estado/cache do Terraform
+.terraform/
+
+# Arquivos de estado do Terraform (podem conter segredos)
+*.tfstate
+*.tfstate.backup
+
+# Log e plano de execução
+crash.log
+*.tfplan
+
+# Arquivos de override locais
+*.override.tf
+*.override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Arquivos de saída temporários
+terraform.tfvars
+terraform.tfvars.json
+
+# Arquivos específicos de sistema
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Arquivos temporários de sistema operacional
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Diretório de configuração do VS Code
+.vscode/
