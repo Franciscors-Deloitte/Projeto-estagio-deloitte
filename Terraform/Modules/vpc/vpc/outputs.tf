@@ -43,3 +43,12 @@ output "internet_gateway_id" {
   description = "ID of the Internet Gateway"
   value       = try(aws_internet_gateway.this[0].id, null)
 }
+
+################################################################################
+# RDS VPC Output
+################################################################################
+
+output "db_subnet_group_name" {
+  value       = aws_db_subnet_group.rds.name
+  description = "Nome do grupo de sub-redes para RDS"
+}

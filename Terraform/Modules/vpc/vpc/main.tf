@@ -83,3 +83,16 @@ resource "aws_route_table_association" "public" {
   subnet_id      = each.value.id
   route_table_id = aws_route_table.public[0].id
 }
+
+##################################
+# DB Subnet Group (para RDS)
+##################################
+
+resource "aws_db_subnet_group" "rds" {
+  name       = "${local.vpc_name}-db-subnet-group"
+  subnet_ids = [for subnet in aws_subnet.private : subnet.id]
+
+  tags = merge(var.tags, {
+    Name = "${local.vpc_name}-db-subnet-group"
+  })
+}

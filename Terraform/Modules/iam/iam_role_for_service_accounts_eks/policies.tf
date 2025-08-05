@@ -64,7 +64,7 @@ resource "aws_iam_policy" "aws_gateway_controller" {
 resource "aws_iam_role_policy_attachment" "aws_gateway_controller" {
   count = var.create_role && var.attach_aws_gateway_controller_policy ? 1 : 0
 
-  role       = aws_iam_role.this[0].name
+  role       = var.iam_role_name
   policy_arn = aws_iam_policy.aws_gateway_controller[0].arn
 }
 
@@ -110,7 +110,7 @@ resource "aws_iam_policy" "cert_manager" {
 resource "aws_iam_role_policy_attachment" "cert_manager" {
   count = var.create_role && var.attach_cert_manager_policy ? 1 : 0
 
-  role       = aws_iam_role.this[0].name
+  role       = var.iam_role_name
   policy_arn = aws_iam_policy.cert_manager[0].arn
 }
 
@@ -174,7 +174,7 @@ resource "aws_iam_policy" "cluster_autoscaler" {
 resource "aws_iam_role_policy_attachment" "cluster_autoscaler" {
   count = var.create_role && var.attach_cluster_autoscaler_policy ? 1 : 0
 
-  role       = aws_iam_role.this[0].name
+  role       = var.iam_role_name
   policy_arn = aws_iam_policy.cluster_autoscaler[0].arn
 }
 
@@ -388,7 +388,7 @@ resource "aws_iam_policy" "ebs_csi" {
 resource "aws_iam_role_policy_attachment" "ebs_csi" {
   count = var.create_role && var.attach_ebs_csi_policy ? 1 : 0
 
-  role       = aws_iam_role.this[0].name
+  role       = var.iam_role_name
   policy_arn = aws_iam_policy.ebs_csi[0].arn
 }
 
@@ -459,7 +459,7 @@ resource "aws_iam_policy" "efs_csi" {
 resource "aws_iam_role_policy_attachment" "efs_csi" {
   count = var.create_role && var.attach_efs_csi_policy ? 1 : 0
 
-  role       = aws_iam_role.this[0].name
+  role       = var.iam_role_name
   policy_arn = aws_iam_policy.efs_csi[0].arn
 }
 
@@ -516,7 +516,7 @@ resource "aws_iam_policy" "mountpoint_s3_csi" {
 resource "aws_iam_role_policy_attachment" "mountpoint_s3_csi" {
   count = var.create_role && var.attach_mountpoint_s3_csi_policy ? 1 : 0
 
-  role       = aws_iam_role.this[0].name
+  role       = var.iam_role_name
   policy_arn = aws_iam_policy.mountpoint_s3_csi[0].arn
 }
 
@@ -558,7 +558,7 @@ resource "aws_iam_policy" "external_dns" {
 resource "aws_iam_role_policy_attachment" "external_dns" {
   count = var.create_role && var.attach_external_dns_policy ? 1 : 0
 
-  role       = aws_iam_role.this[0].name
+  role       = var.iam_role_name
   policy_arn = aws_iam_policy.external_dns[0].arn
 }
 
@@ -655,7 +655,7 @@ resource "aws_iam_policy" "external_secrets" {
 resource "aws_iam_role_policy_attachment" "external_secrets" {
   count = var.create_role && var.attach_external_secrets_policy ? 1 : 0
 
-  role       = aws_iam_role.this[0].name
+  role       = var.iam_role_name
   policy_arn = aws_iam_policy.external_secrets[0].arn
 }
 
@@ -714,7 +714,7 @@ resource "aws_iam_policy" "fsx_lustre_csi" {
 resource "aws_iam_role_policy_attachment" "fsx_lustre_csi" {
   count = var.create_role && var.attach_fsx_lustre_csi_policy ? 1 : 0
 
-  role       = aws_iam_role.this[0].name
+  role       = var.iam_role_name
   policy_arn = aws_iam_policy.fsx_lustre_csi[0].arn
 }
 
@@ -779,7 +779,7 @@ resource "aws_iam_policy" "fsx_openzfs_csi" {
 resource "aws_iam_role_policy_attachment" "fsx_openzfs_csi" {
   count = var.create_role && var.attach_fsx_openzfs_csi_policy ? 1 : 0
 
-  role       = aws_iam_role.this[0].name
+  role       = var.iam_role_name
   policy_arn = aws_iam_policy.fsx_openzfs_csi[0].arn
 }
 
@@ -916,7 +916,7 @@ resource "aws_iam_policy" "karpenter_controller" {
 resource "aws_iam_role_policy_attachment" "karpenter_controller" {
   count = var.create_role && var.attach_karpenter_controller_policy ? 1 : 0
 
-  role       = aws_iam_role.this[0].name
+  role       = var.iam_role_name
   policy_arn = aws_iam_policy.karpenter_controller[0].arn
 }
 
@@ -1209,7 +1209,7 @@ resource "aws_iam_policy" "load_balancer_controller" {
 resource "aws_iam_role_policy_attachment" "load_balancer_controller" {
   count = var.create_role && var.attach_load_balancer_controller_policy ? 1 : 0
 
-  role       = aws_iam_role.this[0].name
+  role       = var.iam_role_name
   policy_arn = aws_iam_policy.load_balancer_controller[0].arn
 }
 
@@ -1262,7 +1262,7 @@ resource "aws_iam_policy" "load_balancer_controller_targetgroup_only" {
 resource "aws_iam_role_policy_attachment" "load_balancer_controller_targetgroup_only" {
   count = var.create_role && var.attach_load_balancer_controller_targetgroup_binding_only_policy ? 1 : 0
 
-  role       = aws_iam_role.this[0].name
+  role       = var.iam_role_name
   policy_arn = aws_iam_policy.load_balancer_controller_targetgroup_only[0].arn
 }
 
@@ -1376,7 +1376,7 @@ resource "aws_iam_policy" "appmesh_controller" {
 resource "aws_iam_role_policy_attachment" "appmesh_controller" {
   count = var.create_role && var.attach_appmesh_controller_policy ? 1 : 0
 
-  role       = aws_iam_role.this[0].name
+  role       = var.iam_role_name
   policy_arn = aws_iam_policy.appmesh_controller[0].arn
 }
 
@@ -1418,7 +1418,7 @@ resource "aws_iam_policy" "appmesh_envoy_proxy" {
 resource "aws_iam_role_policy_attachment" "appmesh_envoy_proxy" {
   count = var.create_role && var.attach_appmesh_envoy_proxy_policy ? 1 : 0
 
-  role       = aws_iam_role.this[0].name
+  role       = var.iam_role_name
   policy_arn = aws_iam_policy.appmesh_envoy_proxy[0].arn
 }
 
@@ -1457,7 +1457,7 @@ resource "aws_iam_policy" "amazon_managed_service_prometheus" {
 resource "aws_iam_role_policy_attachment" "amazon_managed_service_prometheus" {
   count = var.create_role && var.attach_amazon_managed_service_prometheus_policy ? 1 : 0
 
-  role       = aws_iam_role.this[0].name
+  role       = var.iam_role_name
   policy_arn = aws_iam_policy.amazon_managed_service_prometheus[0].arn
 }
 
@@ -1504,7 +1504,7 @@ resource "aws_iam_policy" "node_termination_handler" {
 resource "aws_iam_role_policy_attachment" "node_termination_handler" {
   count = var.create_role && var.attach_node_termination_handler_policy ? 1 : 0
 
-  role       = aws_iam_role.this[0].name
+  role       = var.iam_role_name
   policy_arn = aws_iam_policy.node_termination_handler[0].arn
 }
 
@@ -1565,7 +1565,7 @@ resource "aws_iam_policy" "velero" {
 resource "aws_iam_role_policy_attachment" "velero" {
   count = var.create_role && var.attach_velero_policy ? 1 : 0
 
-  role       = aws_iam_role.this[0].name
+  role       = var.iam_role_name
   policy_arn = aws_iam_policy.velero[0].arn
 }
 
@@ -1654,7 +1654,7 @@ resource "aws_iam_policy" "vpc_cni" {
 resource "aws_iam_role_policy_attachment" "vpc_cni" {
   count = var.create_role && var.attach_vpc_cni_policy ? 1 : 0
 
-  role       = aws_iam_role.this[0].name
+  role       = var.iam_role_name
   policy_arn = aws_iam_policy.vpc_cni[0].arn
 }
 
@@ -1668,6 +1668,6 @@ resource "aws_iam_role_policy_attachment" "amazon_cloudwatch_observability" {
     AWSXrayWriteOnlyAccess      = "arn:${local.partition}:iam::aws:policy/AWSXrayWriteOnlyAccess"
   } : k => v if var.create_role && var.attach_cloudwatch_observability_policy }
 
-  role       = aws_iam_role.this[0].name
+  role       = var.iam_role_name
   policy_arn = each.value
 }

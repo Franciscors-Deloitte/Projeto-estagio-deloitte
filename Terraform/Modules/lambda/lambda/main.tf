@@ -12,8 +12,11 @@ locals {
   filename    = var.local_existing_package != null ? var.local_existing_package : (var.store_on_s3 ? null : local.archive_filename)
   was_missing = var.local_existing_package != null ? !fileexists(var.local_existing_package) : local.archive_was_missing
 
-  s3_bucket         = var.s3_existing_package != null ? try(var.s3_existing_package.bucket, null) : (var.store_on_s3 ? var.s3_bucket : null)
-  s3_key            = var.s3_existing_package != null ? try(var.s3_existing_package.key, null) : (var.store_on_s3 ? var.s3_prefix != null ? format("%s%s", var.s3_prefix, basename(local.archive_filename_string)) : basename(local.archive_filename_string) : null)
+  s3_bucket = var.s3_existing_package != null ? try(var.s3_existing_package.bucket, null) : (var.store_on_s3 ? var.s3_bucket : null)
+
+  s3_key = var.s3_existing_package != null ? try(var.s3_existing_package.key, null) : (var.store_on_s3 && var.s3_prefix != null ? 
+  format("%s%s", var.s3_prefix, basename(local.archive_filename)) : (var.store_on_s3 ? basename(local.archive_filename) : null))
+
   s3_object_version = var.s3_existing_package != null ? try(var.s3_existing_package.version_id, null) : (var.store_on_s3 ? try(aws_s3_object.lambda_package[0].version_id, null) : null)
 }
 
@@ -63,4 +66,14 @@ resource "aws_lambda_permission" "allow_s3" {
   function_name = aws_lambda_function.this[0].function_name
   principal     = "s3.amazonaws.com"
   source_arn    = var.s3_bucket_arn
+}
+
+##################################
+# Lambda Function URL 
+##################################
+
+resource "aws_lambda_function_url" "this" {
+  count              = var.create_function_url ? 1 : 0
+  function_name      = aws_lambda_function.this[0].function_name
+  authorization_type = "NONE"
 }

@@ -50,16 +50,36 @@ variable "tags" {
 # Ingress
 ##########
 variable "ingress_rules" {
-  description = "List of ingress rules to create by name"
-  type        = list(map(string))
-  default     = []
+  description = "List of ingress rules to create"
+  type = list(object({
+    protocol                  = string
+    from_port                 = number
+    to_port                   = number
+    cidr_blocks               = optional(list(string), [])
+    ipv6_cidr_blocks          = optional(list(string), [])
+    prefix_list_ids           = optional(list(string), [])
+    source_security_group_id  = optional(string)
+    self                      = optional(bool)
+    description               = optional(string)
+  }))
+  default = []
 }
 
 #########
 # Egress
 #########
 variable "egress_rules" {
-  description = "List of egress rules to create by name"
-  type        = list(map(string))
-  default     = []
+  description = "List of egress rules to create"
+  type = list(object({
+    protocol                  = string
+    from_port                 = number
+    to_port                   = number
+    cidr_blocks               = optional(list(string), [])
+    ipv6_cidr_blocks          = optional(list(string), [])
+    prefix_list_ids           = optional(list(string), [])
+    source_security_group_id  = optional(string)
+    self                      = optional(bool)
+    description               = optional(string)
+  }))
+  default = []
 }

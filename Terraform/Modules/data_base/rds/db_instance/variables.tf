@@ -37,8 +37,8 @@ variable "engine_version" {
 
 variable "engine_lifecycle_support" {
   description = "Enable or disable support for major version upgrades"
-  type        = bool
-  default     = true
+  type        = string
+  default     = "open-source-rds-extended-support-disabled"
 }
 
 variable "instance_class" {

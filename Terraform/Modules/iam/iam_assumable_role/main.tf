@@ -194,3 +194,13 @@ data "aws_iam_policy_document" "inline" {
     }
   }
 }
+resource "aws_iam_instance_profile" "this" {
+   count = var.create_instance_profile ? 1 : 0
+
+  name  = "${coalesce(var.role_name_prefix, var.role_name)}-instance-profile"
+  role  = aws_iam_role.this[0].name
+
+  tags = merge(var.tags, {
+    Name = coalesce(var.role_name_prefix, var.role_name)
+  })
+}

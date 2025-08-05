@@ -43,6 +43,13 @@ data "external" "archive_prepare" {
   }
 }
 
+# Package the Lambda source code into a ZIP file for upload
+data "archive_file" "lambda" {
+  type        = "zip"
+  source_file = var.source_path
+  output_path = var.output_path
+}
+
 # This transitive resource used as a bridge between a state stored
 # in a Terraform plan and a call of a build command on the apply stage
 # to transfer a noticeable amount of data
@@ -74,4 +81,16 @@ resource "null_resource" "archive" {
   }
 
   depends_on = [local_file.archive_plan]
+}
+
+resource "aws_s3_object" "lambda_package" {
+  count = var.store_on_s3 ? 1 : 0
+
+  bucket = var.s3_bucket
+  key    = var.s3_key
+  source = data.archive_file.lambda.output_path
+
+  etag          = filemd5(data.archive_file.lambda.output_path)
+  content_type  = "application/zip"
+  force_destroy = true
 }

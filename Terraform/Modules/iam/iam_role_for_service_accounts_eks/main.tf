@@ -8,11 +8,11 @@ locals {
   account_id = data.aws_caller_identity.current.account_id
   partition  = data.aws_partition.current.partition
   dns_suffix = data.aws_partition.current.dns_suffix
-  region     = data.aws_region.current.name
+  region     = data.aws_region.current.id
 }
 
 data "aws_iam_policy_document" "this" {
-  count = var.create_role ? 1 : 0
+  count = var.create_role && length(var.oidc_providers) > 0 ? 1 : 0
 
   dynamic "statement" {
     for_each = var.allow_self_assume_role ? [1] : []
@@ -38,9 +38,13 @@ data "aws_iam_policy_document" "this" {
   }
 
   dynamic "statement" {
-    for_each = var.oidc_providers
+    for_each = {
+      for k, v in var.oidc_providers : k => v
+      if try(v.provider_arn, null) != null
+    }
 
     content {
+      sid     = "AllowAssumeRoleWithWebIdentity"
       effect  = "Allow"
       actions = ["sts:AssumeRoleWithWebIdentity"]
 
@@ -50,14 +54,14 @@ data "aws_iam_policy_document" "this" {
       }
 
       condition {
-        test     = var.assume_role_condition_test
-        variable = "${replace(statement.value.provider_arn, "/^(.*provider/)/", "")}:sub"
-        values   = [for sa in statement.value.namespace_service_accounts : "system:serviceaccount:${sa}"]
+        test     = "StringEquals"
+        variable = "${replace(statement.value.provider_arn, "/^(.*provider\\/)/", "")}:sub"
+        values   = statement.value.namespace_service_accounts
       }
 
       condition {
-        test     = var.assume_role_condition_test
-        variable = "${replace(statement.value.provider_arn, "/^(.*provider/)/", "")}:aud"
+        test     = "StringEquals"
+        variable = "${replace(statement.value.provider_arn, "/^(.*provider\\/)/", "")}:aud"
         values   = ["sts.amazonaws.com"]
       }
     }

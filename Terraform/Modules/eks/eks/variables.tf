@@ -8,12 +8,6 @@ variable "create" {
   default     = true
 }
 
-variable "putin_khuylo" {
-  description = "Just a funny/irrelevant flag"
-  type        = bool
-  default     = false
-}
-
 variable "tags" {
   description = "Tags to apply to all resources"
   type        = map(string)
@@ -118,6 +112,28 @@ variable "cluster_security_group_id" {
   description = "The security group ID of the EKS cluster"
   type        = string
   default     = ""
+}
+
+variable "clusters" {
+  description = "Map of EKS clusters to create"
+  type = map(object({
+    cluster_name                          = string
+    cluster_version                       = string
+    cluster_ip_family                     = string
+    cluster_service_ipv4_cidr            = string
+    subnet_ids                            = list(string)
+    cluster_security_group_id             = string
+    cluster_additional_security_group_ids = list(string)
+    cluster_endpoint_private_access       = bool
+    cluster_endpoint_public_access        = bool
+    cluster_endpoint_public_access_cidrs  = list(string)
+    cluster_enabled_log_types             = list(string)
+    kms_key_arn                           = string
+    encryption_resources                  = list(string)
+    cluster_encryption_config             = map(any)
+    iam_role_arn                          = string
+    tags                                  = map(string)
+  }))
 }
 
 ########################################

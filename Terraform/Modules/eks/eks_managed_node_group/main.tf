@@ -41,8 +41,4 @@ resource "aws_eks_node_group" "this" {
   update_config {
     max_unavailable = var.max_unavailable
   }
-
-  depends_on = [
-  aws_iam_role.this
-]
 }

@@ -2,7 +2,7 @@
 # Locals
 #########################
 locals {
-  create                           = var.create && var.putin_khuylo
+  create                           = var.create
   partition                        = try(data.aws_partition.current[0].partition, "")
   cluster_role                     = try(aws_iam_role.this[0].arn, var.iam_role_arn)
   create_outposts_local_cluster    = length(var.outpost_config) > 0
@@ -27,6 +27,19 @@ data "aws_iam_session_context" "current" {
   arn   = try(data.aws_caller_identity.current[0].arn, "")
 }
 
+data "aws_iam_policy_document" "assume_role" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["eks.amazonaws.com"]
+    }
+
+    actions = ["sts:AssumeRole"]
+  }
+}
+
 #########################
 # Cluster Role (IAM)
 #########################
@@ -41,36 +54,44 @@ resource "aws_iam_role" "this" {
 # EKS Cluster
 #########################
 resource "aws_eks_cluster" "this" {
-  count = local.create ? 1 : 0
+  for_each = var.clusters
 
-  name     = var.cluster_name
-  role_arn = local.cluster_role
-  version  = var.cluster_version
+  name     = each.value.cluster_name
+  role_arn = each.value.iam_role_arn
 
-  vpc_config {
-    subnet_ids              = var.subnet_ids
-    endpoint_private_access = var.cluster_endpoint_private_access
-    endpoint_public_access  = var.cluster_endpoint_public_access
-    public_access_cidrs     = var.cluster_endpoint_public_access_cidrs
-    security_group_ids      = concat(var.cluster_additional_security_group_ids, [local.cluster_security_group_id])
-  }
+  version = each.value.cluster_version
+  enabled_cluster_log_types = each.value.cluster_enabled_log_types
 
   kubernetes_network_config {
-    ip_family         = var.cluster_ip_family
-    service_ipv4_cidr = var.cluster_service_ipv4_cidr
+    service_ipv4_cidr = each.value.cluster_service_ipv4_cidr
+    ip_family          = each.value.cluster_ip_family
   }
 
-  enabled_cluster_log_types = var.cluster_enabled_log_types
+  vpc_config {
+    subnet_ids              = each.value.subnet_ids
+    endpoint_private_access = each.value.cluster_endpoint_private_access
+    endpoint_public_access  = each.value.cluster_endpoint_public_access
+    public_access_cidrs     = each.value.cluster_endpoint_public_access_cidrs
+    security_group_ids      = concat(
+      [each.value.cluster_security_group_id],
+      each.value.cluster_additional_security_group_ids
+    )
+  }
 
   dynamic "encryption_config" {
-    for_each = local.enable_cluster_encryption_config ? [1] : []
+    for_each = length(each.value.encryption_resources) > 0 ? [1] : []
     content {
       provider {
-        key_arn = var.kms_key_arn
+        key_arn = each.value.kms_key_arn
       }
-      resources = var.encryption_resources
+      resources = each.value.encryption_resources
     }
   }
 
-  tags = merge(var.tags, { Name = var.cluster_name })
+  tags = merge(
+    {
+      Name = each.value.cluster_name
+    },
+    each.value.tags
+  )
 }

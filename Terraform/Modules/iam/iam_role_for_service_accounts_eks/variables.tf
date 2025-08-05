@@ -22,11 +22,6 @@ variable "role_name_prefix" {
   default     = null
 }
 
-variable "policy_name_prefix" {
-  description = "IAM policy name prefix"
-  type        = string
-  default     = "AmazonEKS_"
-}
 
 variable "role_policy_arns" {
   description = "ARNs of any policies to attach to the IAM role"
@@ -40,17 +35,6 @@ variable "oidc_providers" {
   default     = {}
 }
 
-variable "tags" {
-  description = "A map of tags to add the the IAM role"
-  type        = map(any)
-  default     = {}
-}
-
-variable "assume_role_condition_test" {
-  description = "Name of the [IAM condition operator](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition_operators.html) to evaluate when assuming the role"
-  type        = string
-  default     = "StringEquals"
-}
 
 variable "allow_self_assume_role" {
   description = "Determines whether to allow the role to be [assume itself](https://aws.amazon.com/blogs/security/announcing-an-update-to-iam-role-trust-policy-behavior/)"
@@ -61,6 +45,17 @@ variable "allow_self_assume_role" {
 variable "iam_role_name" {
   description = "Name of the IAM role created via iam-assumable-role module"
   type        = string
+}
+
+variable "policy_name_prefix" {
+  description = "IAM policy name prefix"
+  type        = string
+  default     = "AmazonEKS_"
+}
+variable "tags" {
+  description = "A map of tags to add the the IAM role"
+  type        = map(any)
+  default     = {}
 }
 
 ################################################################################

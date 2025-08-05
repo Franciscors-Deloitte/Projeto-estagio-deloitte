@@ -67,13 +67,37 @@ module "security_group" {
   use_name_prefix = true
 
   ingress_rules = [
-    { rule = "ssh-tcp", cidr_blocks = ["0.0.0.0/0"] },
-    { rule = "https-443-tcp", cidr_blocks = ["0.0.0.0/0"] },
-    { rule = "postgresql-tcp", cidr_blocks = ["10.0.0.0/16"] }
+    {
+      protocol    = "tcp"
+      from_port   = 22
+      to_port     = 22
+      cidr_blocks = ["0.0.0.0/0"]
+      description = "SSH"
+    },
+    {
+      protocol    = "tcp"
+      from_port   = 443
+      to_port     = 443
+      cidr_blocks = ["0.0.0.0/0"]
+      description = "HTTPS"
+    },
+    {
+      protocol    = "tcp"
+      from_port   = 5432
+      to_port     = 5432
+      cidr_blocks = ["10.0.0.0/16"]
+      description = "PostgreSQL"
+    }
   ]
 
   egress_rules = [
-    { rule = "all-all", cidr_blocks = ["0.0.0.0/0"] }
+    {
+      protocol    = "-1"
+      from_port   = 0
+      to_port     = 0
+      cidr_blocks = ["0.0.0.0/0"]
+      description = "Allow all egress"
+    }
   ]
 
   tags = {
@@ -81,7 +105,6 @@ module "security_group" {
     Project     = "infra-example"
   }
 }
-
 ##################################
 # IAM
 ##################################
@@ -333,6 +356,7 @@ module "lambda_function" {
   runtime       = "python3.11"
 
   source_path = "${path.module}/package.py"
+  output_path = "${path.module}/package.zip"
 
   lambda_execution_role_arn = module.iam_assumable_role_services.iam_role_arn
 
@@ -783,34 +807,32 @@ module "iam_assumable_role_eks" {
 module "eks" {
   source = "../Modules/eks/eks"
 
-  cluster_name                = "example-eks-cluster"
-  cluster_version             = "1.29"
-  cluster_ip_family           = "ipv4"
-  cluster_service_ipv4_cidr   = "10.100.0.0/16"
-
-  subnet_ids                  = module.vpc.private_subnet_ids
-  cluster_security_group_id   = module.security_group.security_group_id
-  cluster_additional_security_group_ids = []
-
-  cluster_endpoint_private_access       = true
-  cluster_endpoint_public_access        = true
-  cluster_endpoint_public_access_cidrs  = ["0.0.0.0/0"]
-
-  cluster_enabled_log_types             = ["api", "audit"]
-
-  kms_key_arn                 = module.kms.key_arn
-  cluster_encryption_config   = {}
-  encryption_resources        = []
-
-  iam_role_arn                = module.iam_assumable_role_eks.iam_role_arn
-
-  create_cni_ipv6_iam_policy  = false
-  dataplane_wait_duration     = "30s"
-
-  tags = {
-    Environment = "dev"
-    Project     = "infra-example"
+  clusters = {
+    cluster-1 = {
+      cluster_name                          = "example-eks-cluster"
+      cluster_version                       = "1.29"
+      cluster_ip_family                     = "ipv4"
+      cluster_service_ipv4_cidr             = "10.100.0.0/16"
+      subnet_ids                            = module.vpc.private_subnet_ids
+      cluster_security_group_id             = module.security_group.security_group_id
+      cluster_additional_security_group_ids = []
+      cluster_endpoint_private_access       = true
+      cluster_endpoint_public_access        = true
+      cluster_endpoint_public_access_cidrs  = ["0.0.0.0/0"]
+      cluster_enabled_log_types             = ["api", "audit"]
+      kms_key_arn                           = module.kms.key_arn
+      encryption_resources                  = []
+      cluster_encryption_config             = {}
+      iam_role_arn                          = module.iam_assumable_role_eks.iam_role_arn
+      tags = {
+        Environment = "dev"
+        Project     = "infra-example"
+      }
+    }
   }
+
+  create_cni_ipv6_iam_policy = false
+  dataplane_wait_duration    = "30s"
 }
 
 ##################################
@@ -821,7 +843,7 @@ module "eks_managed_node_group" {
   source = "../Modules/eks/eks_managed_node_group"
 
   name           = "example-node-group"
-  cluster_name   = module.eks.cluster_name
+  cluster_name   = module.eks.clusters[var.eks_cluster_name].cluster_name
   node_role_arn  = module.iam_assumable_role_eks.iam_role_arn
   subnet_ids     = module.vpc.private_subnet_ids
 

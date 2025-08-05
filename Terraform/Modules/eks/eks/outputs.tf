@@ -42,6 +42,11 @@ output "cluster_status" {
   value       = try(aws_eks_cluster.this[0].status, null)
 }
 
+output "clusters" {
+  description = "Map of cluster configurations passed to the module"
+  value       = var.clusters
+}
+
 #############################
 # OIDC / Identity
 #############################

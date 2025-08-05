@@ -26,16 +26,16 @@ locals {
 # WAIT UNTIL EKS CLUSTER IS READY
 # ========================
 resource "time_sleep" "this" {
-  count = var.create ? 1 : 0
+  for_each = var.create ? aws_eks_cluster.this : {}
 
   create_duration = var.dataplane_wait_duration
 
   triggers = {
-    cluster_name                        = aws_eks_cluster.this[0].id
-    cluster_endpoint                    = aws_eks_cluster.this[0].endpoint
-    cluster_version                     = aws_eks_cluster.this[0].version
-    cluster_service_cidr                = var.cluster_ip_family == "ipv6" ? try(local.kubernetes_network_config.service_ipv6_cidr, "") : try(local.kubernetes_network_config.service_ipv4_cidr, "")
-    cluster_certificate_authority_data = aws_eks_cluster.this[0].certificate_authority[0].data
+    cluster_name                        = each.value.id
+    cluster_endpoint                    = each.value.endpoint
+    cluster_version                     = each.value.version
+    cluster_service_cidr                = var.cluster_ip_family == "ipv6" ? try(each.value.kubernetes_network_config[0].service_ipv6_cidr, "") : try(each.value.kubernetes_network_config[0].service_ipv4_cidr, "")
+    cluster_certificate_authority_data = each.value.certificate_authority[0].data
   }
 }
 

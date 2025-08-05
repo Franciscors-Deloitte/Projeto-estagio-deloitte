@@ -30,6 +30,7 @@ variable "labels" {
   default     = {}
 }
 
+
 ##################################
 # Network and identity
 ##################################
@@ -43,6 +44,7 @@ variable "node_role_arn" {
   description = "IAM role ARN for the node group"
   type        = string
 }
+
 
 ##################################
 # Scaling and compute
@@ -80,10 +82,6 @@ variable "max_size" {
   description = "Maximum number of nodes"
   type        = number
 }
-
-##################################
-# Updates and versioning
-##################################
 
 variable "kubernetes_version" {
   description = "Kubernetes version"

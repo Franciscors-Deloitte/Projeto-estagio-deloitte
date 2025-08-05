@@ -88,6 +88,12 @@ variable "s3_prefix" {
   default     = null
 }
 
+variable "s3_key" {
+  description = "S3 object key (full path) for the Lambda package"
+  type        = string
+  default     = null
+}
+
 variable "environment_variables" {
   description = "Map of environment variables for the Lambda function"
   type        = map(string)
@@ -124,6 +130,12 @@ variable "s3_bucket_arn" {
   default     = null
 }
 
+variable "create_function_url" {
+  description = "Whether to create a Lambda Function URL for public access"
+  type        = bool
+  default     = false
+}
+
 ##################################
 # Package
 ##################################
@@ -136,6 +148,12 @@ variable "create_package" {
 
 variable "source_path" {
   description = "Path to the source code directory of the Lambda function"
+  type        = string
+  default     = null
+}
+
+variable "output_path" {
+  description = "Path to store the generated zip file from archive_file"
   type        = string
   default     = null
 }
