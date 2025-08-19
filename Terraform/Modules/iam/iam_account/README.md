@@ -6,16 +6,16 @@ No Modules.
 
 | Name | Type |
 |------|------|
-| aws_caller_identity.this | Data Source |
 | aws_iam_account_alias.this | resource |
 | aws_iam_account_password_policy.this | resource |
+| aws_caller_identity.this | Data Source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | get_caller_identity | Whether to get AWS account ID, User ID, and ARN in which Terraform is authorized | `bool` | `true` | no |
-| account_alias | AWS IAM account alias for this account | `string` | `null` | yes |
+| account_alias | AWS IAM account alias for this account | `string` | `n/a` | yes |
 | create_account_password_policy | Whether to create AWS IAM account password policy | `bool` | `true` | no |
 | max_password_age | The number of days that an user password is valid. | `number` | `0` | no |
 | minimum_password_length | Minimum length to require for user passwords | `number` | `8` | no |

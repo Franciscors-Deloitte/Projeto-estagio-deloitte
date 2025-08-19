@@ -23,37 +23,30 @@ No Modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| admin_role_policy_arn | Policy ARN to use for admin role | `string` | `"arn:aws:iam::aws:policy/AdministratorAccess"` | no |
-| allow_self_assume_role | Determines whether to allow the role to be assume itself | `bool` | `false` | no |
-| attach_admin_policy | Whether to attach an admin policy to a role | `bool` | `false` | no |
-| attach_poweruser_policy | Whether to attach a poweruser policy to a role | `bool` | `false` | no |
-| attach_readonly_policy | Whether to attach a readonly policy to a role | `bool` | `false` | no |
-| create_custom_role_trust_policy | Whether to create a custom_role_trust_policy | `bool` | `false` | no |
+| allow_self_assume_role | Allow the role to assume itself (chaining) | `bool` | `false` | no |
+| create_custom_role_trust_policy | Whether to create the trust policy in this module (set to false if you provide `custom_role_trust_policy`) | `bool` | `true` | no |
 | create_instance_profile | Whether to create an instance profile | `bool` | `false` | no |
 | create_role | Whether to create a role | `bool` | `false` | no |
-| custom_role_policy_arns | List of ARNs of IAM policies to attach to IAM role | `list(string)` | `[]` | no |
-| custom_role_trust_policy | A custom role trust policy (requires create_custom_role_trust_policy = true) | `string` | `""` | no |
-| force_detach_policies | Whether policies should be detached from this role when destroying | `bool` | `false` | no |
-| inline_policy_statements | List of inline policy statements to attach to IAM role | `any` | `[]` | no |
-| max_session_duration | Max CLI/API session duration in seconds (3600–43200) | `number` | `3600` | no |
-| mfa_age | Max age of valid MFA (in seconds) | `number` | `86400` | no |
-| number_of_custom_role_policy_arns | Number of IAM policies to attach to IAM role | `number` | `null` | no |
-| poweruser_role_policy_arn | Policy ARN to use for poweruser role | `string` | `"arn:aws:iam::aws:policy/PowerUserAccess"` | no |
-| readonly_role_policy_arn | Policy ARN to use for readonly role | `string` | `"arn:aws:iam::aws:policy/ReadOnlyAccess"` | no |
-| role_description | IAM Role description | `string` | `""` | no |
-| role_name | IAM role name | `string` | `null` | no |
+| custom_role_trust_policy | Custom trust policy JSON (used when `create_custom_role_trust_policy = false`) | `string` | `""` | no |
+| force_detach_policies | Detach policies from the role on destroy | `bool` | `false` | no |
+| inline_policy_statements | Inline policy statements to embed in the role | `list(object({ sid = optional(string), effect = optional(string, "Allow"), actions = list(string), resources = list(string) }))` | `[]` | no |
+| max_session_duration | Maximum session duration (seconds) | `number` | `3600` | no |
+| mfa_age | Max age of valid MFA (seconds) | `number` | `86400` | no |
+| role_description | IAM role description | `string` | `null` | no |
+| role_name | IAM role name | `string` | `n/a` | yes |
 | role_name_prefix | IAM role name prefix | `string` | `null` | no |
-| role_path | Path of IAM role | `string` | `"/"` | no |
-| role_permissions_boundary_arn | Permissions boundary ARN to use for IAM role | `string` | `""` | no |
-| role_requires_mfa | Whether role requires MFA | `bool` | `true` | no |
-| role_requires_session_name | Whether role_session_name is required when assuming the role | `bool` | `false` | no |
-| role_session_name | Session name for role assumption (usually the username) | `list(string)` | `["${aws:username}"]` | no |
-| role_sts_externalid | STS ExternalId condition values (used when MFA is not required) | `any` | `[]` | no |
-| tags | A map of tags to add to IAM role resources | `map(string)` | `{}` | no |
-| trust_policy_conditions | Condition constraints for trust policy | `list(object)` | `[]` | no |
+| role_path | IAM role path | `string` | `"/"` | no |
+| role_permissions_boundary_arn | Permissions boundary ARN | `string` | `""` | no |
+| role_policy_arns | Policy ARNs to attach to the role | `list(string)` | `[]` | no |
+| role_requires_mfa | Require MFA to assume the role | `bool` | `true` | no |
+| role_requires_session_name | Require session name when assuming the role | `bool` | `true` | no |
+| role_session_name | Default session name (usually the username) | `list(string)` | `["${aws:username}"]` | no |
+| role_sts_externalid | STS ExternalId to require (when MFA not required) | `string` | `null` | no |
+| tags | Tags to apply to IAM resources | `map(string)` | `{}` | no |
+| trust_policy_conditions | Extra trust policy conditions | `list(object({ test = string, variable = string, values = list(string) }))` | `[]` | no |
 | trusted_role_actions | Additional trusted role actions | `list(string)` | `["sts:AssumeRole", "sts:TagSession"]` | no |
-| trusted_role_arns | ARNs of AWS entities who can assume these roles | `list(string)` | `[]` | no |
-| trusted_role_services | AWS services that can assume these roles | `list(string)` | `[]` | no |
+| trusted_role_arns | Trusted role/user ARNs allowed to assume | `list(string)` | `[]` | no |
+| trusted_role_services | AWS services allowed to assume | `list(string)` | `[]` | no |
 
 ## Outputs
 

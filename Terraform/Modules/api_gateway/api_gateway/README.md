@@ -19,8 +19,8 @@ No Modules.
 | name | Name of the API Gateway | `string` | `null` | yes |
 | description | Description of the API Gateway | `string` | `""` | no |
 | protocol_type | Type of API Gateway protocol. Valid values: HTTP or WEBSOCKET | `string` | `"HTTP"` | no |
-| tags | Tags to apply to all resources | `map(string)` | `{` | no |
-| cors_configuration | CORS configuration for the API | `object({` | `null` | yes |
+| tags | Tags to apply to all resources | `map(string)` | `{}` | no |
+| cors_configuration | CORS configuration for the API | `object({ allow_credentials = bool, allow_headers = list(string), allow_methods = list(string), allow_origins = list(string), expose_headers = list(string), max_age = number })` | `null` | yes |
 | stage_name | Name of the deployment stage (e.g., prod, dev) | `string` | `"prod"` | no |
 | auto_deploy | Whether to auto-deploy the API when changes are made | `bool` | `true` | no |
 | access_log_destination_arn | ARN of the CloudWatch Logs group for access logging | `string` | `null` | no |
@@ -29,7 +29,7 @@ No Modules.
 | throttling_burst_limit | Throttling burst limit for the default route | `number` | `null` | no |
 | throttling_rate_limit | Throttling rate limit (requests per second) for the default route | `number` | `null` | no |
 | create_routes_and_integrations | Whether to create API routes and integrations | `bool` | `true` | no |
-| routes | List of routes and integration configuration | `list(object({` | `null` | yes |
+| routes | List of routes and integration configuration | `list(object({ route_key = string, integration_type = string, integration_uri = string, integration_method = string, payload_format_version = string, timeout_milliseconds = optional(number) }))` | `[]` | no |
 | body | OpenAPI specification body to import (for HTTP APIs only) | `string` | `null` | no |
 | api_key_selection_expression | The API key selection expression for WebSocket APIs | `string` | `null` | no |
 

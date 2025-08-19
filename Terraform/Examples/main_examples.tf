@@ -118,16 +118,16 @@ module "iam_account" {
 
   account_alias = "infra-faculdade"
 
-  create_account_password_policy     = true
-  max_password_age                   = 90
-  minimum_password_length            = 12
-  allow_users_to_change_password     = true
-  hard_expiry                        = false
-  password_reuse_prevention          = 5
-  require_lowercase_characters       = true
-  require_uppercase_characters       = true
-  require_numbers                    = true
-  require_symbols                    = true
+  create_account_password_policy = true
+  max_password_age               = 90
+  minimum_password_length        = 12
+  allow_users_to_change_password = true
+  hard_expiry                    = false
+  password_reuse_prevention      = 5
+  require_lowercase_characters   = true
+  require_uppercase_characters   = true
+  require_numbers                = true
+  require_symbols                = true
 }
 
 ##################################
@@ -137,9 +137,9 @@ module "iam_account" {
 module "iam_policy_s3_rds_readonly" {
   source = "../Modules/iam/iam_policy"
 
-  name        = "S3AndRDSReadonlyPolicy"
-  description = "Permite leitura em S3 e leitura de configuração de RDS"
-  path        = "/"
+  name          = "S3AndRDSReadonlyPolicy"
+  description   = "Permite leitura em S3 e leitura de configuração de RDS"
+  path          = "/"
   create_policy = true
 
   policy = jsonencode({
@@ -179,9 +179,9 @@ module "iam_policy_s3_rds_readonly" {
 module "iam_policy_logs_write" {
   source = "../Modules/iam/iam_policy"
 
-  name        = "LogsWritePolicy"
-  description = "Permite escrita em CloudWatch Logs"
-  path        = "/"
+  name          = "LogsWritePolicy"
+  description   = "Permite escrita em CloudWatch Logs"
+  path          = "/"
   create_policy = true
 
   policy = jsonencode({
@@ -213,8 +213,8 @@ module "iam_policy_logs_write" {
 module "iam_group_with_policies" {
   source = "../Modules/iam/iam_group_with_policies"
 
-  name          = "dev-team"
-  create_group  = true
+  name         = "dev-team"
+  create_group = true
 
   group_users = [
     module.iam_user.iam_user_name
@@ -255,8 +255,8 @@ module "iam_user" {
 module "iam_assumable_role_services" {
   source = "../Modules/iam/iam_assumable_role"
 
-  create_role      = true
-  role_name        = "lambda_ec2_execution_role"
+  create_role = true
+  role_name   = "lambda_ec2_execution_role"
 
   trusted_role_services = [
     "lambda.amazonaws.com",
@@ -265,7 +265,7 @@ module "iam_assumable_role_services" {
   ]
 
   allow_self_assume_role = false
-  role_requires_mfa = false
+  role_requires_mfa      = false
   max_session_duration   = 3600
 }
 
@@ -277,16 +277,16 @@ module "iam_assumable_role_services" {
 module "kms" {
   source = "../Modules/kms/kms"
 
-  create                     = true
-  name                       = "project-kms-key"
-  alias_name                 = "alias/project-kms"
-  description                = "Chave KMS para encriptação de serviços AWS no projeto académico"
-  deletion_window_in_days    = 10
-  enable_key_rotation        = true
-  is_enabled                 = true
-  customer_master_key_spec   = "SYMMETRIC_DEFAULT"
-  key_usage                  = "ENCRYPT_DECRYPT"
-  multi_region               = false
+  create                             = true
+  name                               = "project-kms-key"
+  alias_name                         = "alias/project-kms"
+  description                        = "Chave KMS para encriptação de serviços AWS no projeto académico"
+  deletion_window_in_days            = 10
+  enable_key_rotation                = true
+  is_enabled                         = true
+  customer_master_key_spec           = "SYMMETRIC_DEFAULT"
+  key_usage                          = "ENCRYPT_DECRYPT"
+  multi_region                       = false
   bypass_policy_lockout_safety_check = false
 
   tags = {
@@ -306,14 +306,14 @@ module "kms" {
 module "s3_bucket" {
   source = "../Modules/s3_bucket/s3"
 
-  create              = true
-  name                = "infra-example-bucket"
-  use_name_prefix     = false
-  force_destroy       = false
+  create          = true
+  name            = "infra-example-bucket"
+  use_name_prefix = false
+  force_destroy   = false
 
-  enable_versioning          = true
-  enable_ownership_controls  = true
-  object_ownership           = "BucketOwnerEnforced"
+  enable_versioning         = true
+  enable_ownership_controls = true
+  object_ownership          = "BucketOwnerEnforced"
 
   tags = {
     Environment = "dev"
@@ -402,18 +402,18 @@ module "ec2_instance" {
 module "rds" {
   source = "../Modules/data_base/rds/db_instance"
 
-  identifier        = "example-rds"
-  engine            = "postgres"
-  engine_version    = "15.3"
-  instance_class    = "db.t3.micro"
+  identifier     = "example-rds"
+  engine         = "postgres"
+  engine_version = "15.3"
+  instance_class = "db.t3.micro"
 
   allocated_storage = 20
   storage_type      = "gp2"
 
-  db_name   = "exampledb"
-  username  = "adminuser"
-  password  = "strongpassword123"
-  port      = 5432
+  db_name  = "exampledb"
+  username = "adminuser"
+  password = "strongpassword123"
+  port     = 5432
 
   multi_az            = false
   publicly_accessible = false
@@ -433,12 +433,12 @@ module "rds" {
   deletion_protection = false
   apply_immediately   = true
 
-  monitoring_interval   = 60
-  monitoring_role_arn   = module.iam_assumable_role_services.iam_role_arn
+  monitoring_interval = 60
+  monitoring_role_arn = module.iam_assumable_role_services.iam_role_arn
 
-  performance_insights_enabled      = true
-  performance_insights_kms_key_id  = module.kms.key_arn
-  enabled_cloudwatch_logs_exports  = ["postgresql", "upgrade"]
+  performance_insights_enabled    = true
+  performance_insights_kms_key_id = module.kms.key_arn
+  enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
 
   tags = {
     Environment = "dev"
@@ -453,19 +453,19 @@ module "rds" {
 module "alb" {
   source = "../Modules/alb/alb"
 
-  name                        = "example-alb"
-  internal                    = false
-  load_balancer_type          = "application"
-  enable_deletion_protection  = false
+  name                       = "example-alb"
+  internal                   = false
+  load_balancer_type         = "application"
+  enable_deletion_protection = false
 
   subnets         = module.vpc.public_subnet_ids
   security_groups = [module.security_group.security_group_id]
 
   access_logs = {
-  bucket  = module.s3_bucket.s3_bucket_id
-  prefix  = "alb-logs"
-  enabled = true
-}
+    bucket  = module.s3_bucket.s3_bucket_id
+    prefix  = "alb-logs"
+    enabled = true
+  }
 
   tags = {
     Environment = "dev"
@@ -501,13 +501,13 @@ module "api_gateway" {
 
   access_log_destination_arn = module.log_group.cloudwatch_log_group_arn
   access_log_format = jsonencode({
-    requestId                = "$context.requestId",
-    ip                       = "$context.identity.sourceIp",
-    requestTime              = "$context.requestTime",
-    httpMethod               = "$context.httpMethod",
-    routeKey                 = "$context.routeKey",
-    status                   = "$context.status",
-    integrationErrorMessage  = "$context.integrationErrorMessage"
+    requestId               = "$context.requestId",
+    ip                      = "$context.identity.sourceIp",
+    requestTime             = "$context.requestTime",
+    httpMethod              = "$context.httpMethod",
+    routeKey                = "$context.routeKey",
+    status                  = "$context.status",
+    integrationErrorMessage = "$context.integrationErrorMessage"
   })
 
   tags = {
@@ -567,7 +567,7 @@ module "cloudtrail" {
   is_organization_trail         = false
   kms_key_id                    = module.kms.key_arn
 
-  
+
   enable_cloudwatch_logs    = true
   cloudwatch_logs_role_arn  = module.iam_assumable_role_logs.iam_role_arn
   cloudwatch_logs_group_arn = module.log_group.cloudwatch_log_group_arn
@@ -591,9 +591,9 @@ module "log_group" {
 
   name              = "/aws/cloudtrail/logs"
   retention_in_days = 30
-  kms_key_id      = module.kms.key_arn
-  log_group_class = "STANDARD"
-  skip_destroy    = true
+  kms_key_id        = module.kms.key_arn
+  log_group_class   = "STANDARD"
+  skip_destroy      = true
 
   tags = {
     Environment = "dev"
@@ -619,11 +619,11 @@ module "log_stream" {
 module "log_subscription_filter" {
   source = "../Modules/monitoring/cloud_watch/log_subscription_filter"
 
-  name              = "cloudwatch-to-lambda"
-  log_group_name    = module.log_group.cloudwatch_log_group_name
-  destination_arn   = module.lambda_function.lambda_function_arn
-  role_arn          = module.iam_assumable_role_logs.iam_role_arn
-  filter_pattern    = "" # Aceita todos os logs
+  name            = "cloudwatch-to-lambda"
+  log_group_name  = module.log_group.cloudwatch_log_group_name
+  destination_arn = module.lambda_function.lambda_function_arn
+  role_arn        = module.iam_assumable_role_logs.iam_role_arn
+  filter_pattern  = "" # Aceita todos os logs
 
 }
 
@@ -739,11 +739,11 @@ module "waf" {
 ##################################
 
 module "eks_admin_policy" {
-  source       = "../Modules/iam/iam_policy"
+  source        = "../Modules/iam/iam_policy"
   create_policy = true
   name          = "eks-admin-policy"
   description   = "Política para administração do EKS"
-  policy        = jsonencode({
+  policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
@@ -764,11 +764,11 @@ module "eks_admin_policy" {
 ##################################
 
 module "eks_user" {
-  source                         = "../Modules/iam/iam_user"
-  create_user                    = true
-  name                           = "eks-admin-user"
-  path                           = "/"
-  force_destroy                  = true
+  source                        = "../Modules/iam/iam_user"
+  create_user                   = true
+  name                          = "eks-admin-user"
+  path                          = "/"
+  force_destroy                 = true
   create_iam_user_login_profile = false
   create_iam_access_key         = false
 
@@ -785,12 +785,12 @@ module "eks_user" {
 ##################################
 
 module "iam_assumable_role_eks" {
-  source = "../Modules/iam/iam_assumable_role" 
+  source = "../Modules/iam/iam_assumable_role"
 
   create_role           = true
   role_name             = "eks_cluster_role"
   role_requires_mfa     = false
-  trusted_role_services = ["eks.amazonaws.com"] 
+  trusted_role_services = ["eks.amazonaws.com"]
 
   max_session_duration = 3600
 
@@ -842,10 +842,10 @@ module "eks" {
 module "eks_managed_node_group" {
   source = "../Modules/eks/eks_managed_node_group"
 
-  name           = "example-node-group"
-  cluster_name   = module.eks.clusters[var.eks_cluster_name].cluster_name
-  node_role_arn  = module.iam_assumable_role_eks.iam_role_arn
-  subnet_ids     = module.vpc.private_subnet_ids
+  name          = "example-node-group"
+  cluster_name  = module.eks.clusters[var.eks_cluster_name].cluster_name
+  node_role_arn = module.iam_assumable_role_eks.iam_role_arn
+  subnet_ids    = module.vpc.private_subnet_ids
 
   instance_types = ["t3.medium"]
   desired_size   = 2
@@ -875,14 +875,14 @@ module "eks_managed_node_group" {
 module "aws_auth" {
   source = "../Modules/eks/aws_auth"
 
-  create                      = true
-  create_aws_auth_configmap  = true
+  create                    = true
+  create_aws_auth_configmap = true
 
   aws_auth_roles = [
     {
-      rolearn = module.eks_managed_node_group.node_group_iam_role_arn
+      rolearn  = module.eks_managed_node_group.node_group_iam_role_arn
       username = "system:node:{{EC2PrivateDNSName}}"
-      groups   = [
+      groups = [
         "system:bootstrappers",
         "system:nodes"
       ]

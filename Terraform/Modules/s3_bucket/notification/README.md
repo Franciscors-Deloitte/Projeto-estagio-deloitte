@@ -6,19 +6,19 @@ No Modules.
 
 | Name | Type |
 |------|------|
-| aws_partition.this | Data Source |
 | aws_s3_bucket_notification.this | resource |
+| aws_partition.this | Data Source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | create | Controls whether resources are created | `bool` | `true` | no |
-| bucket | Name of the bucket to configure notifications for | `string` | `null` | yes |
+| bucket | Name of the bucket to configure notifications for | `string` | `n/a` | yes |
 | eventbridge | Enables Amazon EventBridge notifications | `bool` | `false` | no |
-| lambda_notifications | Map of Lambda notification configurations | `any` | `{` | no |
-| sqs_notifications | Map of SQS notification configurations | `any` | `{` | no |
-| sns_notifications | Map of SNS notification configurations | `any` | `{` | no |
+| lambda_notifications | Map of Lambda function notifications and their configuration | `map(object({` *function_arn = string* `,` *filter_prefix = string* `,` *filter_suffix = string* `}))` | `n/a` | yes |
+| sqs_notifications | Map of SQS queue notifications and their configuration | `map(object({` *queue_arn = string* `,` *filter_prefix = string* `,` *filter_suffix = string* `}))` | `n/a` | yes |
+| sns_notifications | Map of SNS topic notifications and their configuration | `map(object({` *topic_arn = string* `,` *filter_prefix = string* `,` *filter_suffix = string* `}))` | `n/a` | yes |
 
 ## Outputs
 

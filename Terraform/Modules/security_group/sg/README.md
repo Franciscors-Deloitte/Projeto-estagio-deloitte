@@ -14,16 +14,16 @@ No Modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| create | Whether to create security group and all rules | `bool` | `true` | no |
+| create | Whether to create any resources | `bool` | `true` | no |
 | create_sg | Whether to create security group | `bool` | `true` | no |
-| vpc_id | ID of the VPC where to create security group | `string` | `null` | no |
-| name | Name of security group - not required if create_sg is false | `string` | `null` | no |
-| use_name_prefix | Whether to use name_prefix or fixed name. Should be true to able to update security group name after initial creation | `bool` | `true` | no |
-| description | Description of security group | `string` | `"Security Group managed by Terraform"` | no |
-| revoke_rules_on_delete | Instruct Terraform to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. Enable for EMR. | `bool` | `false` | no |
-| tags | A mapping of tags to assign to security group | `map(string)` | `{` | no |
-| ingress_rules | List of ingress rules to create by name | `list(map(string))` | `[]` | no |
-| egress_rules | List of egress rules to create by name | `list(map(string))` | `[]` | no |
+| vpc_id | VPC ID to create the security group in | `string` | `n/a` | yes |
+| name | Security group name | `string` | `n/a` | yes |
+| use_name_prefix | Whether to use `name` as a prefix | `bool` | `false` | no |
+| description | Security group description | `string` | `"Managed by Terraform"` | no |
+| revoke_rules_on_delete | Instruct Terraform to revoke all rules on delete. Enable for EMR. | `bool` | `false` | no |
+| tags | A mapping of tags to assign to security group | `map(string)` | `{}` | no |
+| ingress_rules | List of ingress rules to create | `list(object({ protocol = string, from_port = number, to_port = number, cidr_blocks = list(string), ipv6_cidr_blocks = list(string), prefix_list_ids = list(string), security_groups = list(string), self = bool, description = string }))` | `n/a` | yes |
+| egress_rules | List of egress rules to create | `list(object({ protocol = string, from_port = number, to_port = number, cidr_blocks = list(string), ipv6_cidr_blocks = list(string), prefix_list_ids = list(string), security_groups = list(string), self = bool, description = string }))` | `n/a` | yes |
 
 ## Outputs
 

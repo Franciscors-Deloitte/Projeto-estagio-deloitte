@@ -12,13 +12,13 @@ No Modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| create | Whether to create the Cloudwatch log stream | `bool` | `true` | no |
-| name | A name for the log stream | `string` | `null` | no |
-| destination_arn | The ARN of the destination to deliver matching log events to. Kinesis stream or Lambda function ARN | `string` | `null` | no |
-| filter_pattern | A valid CloudWatch Logs filter pattern for subscribing to a filtered stream of log events. Use empty string to match everything | `string` | `""` | no |
+| create | Whether to create the CloudWatch Logs subscription filter | `bool` | `true` | no |
+| name | A name for the subscription filter | `string` | `null` | no |
+| destination_arn | The ARN of the destination to deliver matching log events to (Kinesis stream or Lambda function ARN) | `string` | `null` | no |
+| filter_pattern | A valid CloudWatch Logs filter pattern for subscribing to a filtered stream of log events. Use empty string `""` to match everything | `string` | `""` | no |
 | log_group_name | The name of the log group to associate the subscription filter with | `string` | `null` | no |
-| role_arn | The ARN of an IAM role that grants Amazon CloudWatch Logs permissions to deliver ingested log events to the destination | `string` | `null` | no |
-| distribution | The method used to distribute log data to the destination. By default log data is grouped by log stream, but the grouping can be set to random for a more even distribution | `string` | `null` | no |
+| role_arn | The ARN of an IAM role that grants CloudWatch Logs permissions to deliver ingested log events to the destination | `string` | `null` | no |
+| distribution | The method used to distribute log data to the destination (`ByLogStream` or `Random`) | `string` | `null` | no |
 
 ## Outputs
 

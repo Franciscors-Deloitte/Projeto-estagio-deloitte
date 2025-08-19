@@ -86,6 +86,11 @@ variable "tags" {
   default     = {}
 }
 
+variable "custom_role_policy_arns" {
+  description = "Extra policy ARNs to attach (legacy input)"
+  type        = list(string)
+  default     = []
+}
 
 variable "custom_role_trust_policy" {
   description = "A custom role trust policy. (Only valid if create_custom_role_trust_policy = true)"
@@ -132,12 +137,6 @@ variable "role_requires_session_name" {
   description = "Whether role requires session name"
   type        = bool
   default     = true
-}
-
-variable "role_session_name" {
-  description = "Session name to require for assume role"
-  type        = string
-  default     = null
 }
 
 variable "role_sts_externalid" {

@@ -14,10 +14,10 @@ No Modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | create | Whether to create the WAFv2 Web ACL | `bool` | `true` | no |
-| name | Name of the WAFv2 Web ACL | `string` | `null` | yes |
+| name | Name of the WAFv2 Web ACL | `string` | `n/a` | yes |
 | description | Description of the Web ACL | `string` | `null` | no |
 | scope | Specifies whether this is for CloudFront (CLOUDFRONT) or regional (REGIONAL) resources | `string` | `"REGIONAL"` | no |
-| tags | A map of tags to assign to the resources | `map(string)` | `{` | no |
+| tags | A map of tags to assign to the resources | `map(string)` | `{}` | no |
 | associate_with_resource | Whether to associate the Web ACL with a resource (ALB, CloudFront, etc.) | `bool` | `false` | no |
 | resource_arn | The ARN of the resource to associate with the Web ACL | `string` | `null` | no |
 

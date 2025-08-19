@@ -17,8 +17,8 @@ No Modules.
 | name_prefix | IAM policy name prefix | `string` | `null` | no |
 | path | The path of the policy in IAM | `string` | `"/"` | no |
 | description | The description of the policy | `string` | `"IAM Policy"` | no |
-| policy | The path of the policy in IAM (tpl file) | `string` | `""` | no |
-| tags | A map of tags to add to all resources. | `map(string)` | `{` | no |
+| policy | The JSON policy document to set in the IAM policy | `string` | `""` | no |
+| tags | A map of tags to add to all resources. | `map(string)` | `{}` | no |
 
 ## Outputs
 

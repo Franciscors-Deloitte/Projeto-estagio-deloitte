@@ -4,14 +4,14 @@ No Modules.
 
 ## Resources
 
-| Name | Type |
-|------|------|
-| aws_iam_group.this | resource |
-| aws_iam_group_membership.this | resource |
-| aws_iam_group_policy_attachment.this | resource |
-| aws_caller_identity.current | Data Source |
-| aws_partition.current | Data Source |
-| aws_iam_policy_document.iam_self_management | Data Source |
+| Name | Type | Defined In |
+|------|------|------------|
+| aws_iam_group.this | resource | main.tf |
+| aws_iam_group_membership.this | resource | main.tf |
+| aws_iam_group_policy_attachment.this | resource | main.tf |
+| aws_caller_identity.current | Data Source | policies.tf |
+| aws_partition.current | Data Source | policies.tf |
+| aws_iam_policy_document.iam_self_management | Data Source | policies.tf |
 
 ## Inputs
 

@@ -4,15 +4,16 @@ data "aws_partition" "current" {}
 locals {
   account_id                         = data.aws_caller_identity.current.account_id
   partition                          = data.aws_partition.current.partition
-  role_sts_externalid                = flatten([var.role_sts_externalid])
+  role_sts_externalid                = (var.role_sts_externalid == null || length(trimspace(var.role_sts_externalid)) == 0) ? [] : [var.role_sts_externalid]
   role_name_condition                = var.role_name != null ? var.role_name : "${var.role_name_prefix}*"
   custom_role_trust_policy_condition = var.create_custom_role_trust_policy ? var.custom_role_trust_policy : ""
   create_iam_role_inline_policy      = var.create_role && length(var.inline_policy_statements) > 0
+  all_policy_arns = concat(var.role_policy_arns, var.custom_role_policy_arns)
 }
 
-# Trust Policy sem MFA
+# Trust Policy without MFA
 data "aws_iam_policy_document" "assume_role" {
-  count = !var.create_custom_role_trust_policy && !var.role_requires_mfa ? 1 : 0
+  count = var.role_requires_mfa ? 0 : 1
 
   dynamic "statement" {
     for_each = var.allow_self_assume_role ? [1] : []
@@ -75,9 +76,9 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 
-# Trust Policy com MFA
+# Trust Policy with MFA
 data "aws_iam_policy_document" "assume_role_with_mfa" {
-  count = !var.create_custom_role_trust_policy && var.role_requires_mfa ? 1 : 0
+  count = var.role_requires_mfa ? 1 : 0
 
   statement {
     effect  = "Allow"
@@ -146,17 +147,17 @@ resource "aws_iam_role" "this" {
   force_detach_policies = var.force_detach_policies
   permissions_boundary  = var.role_permissions_boundary_arn
 
-  assume_role_policy = coalesce(
-    local.custom_role_trust_policy_condition,
-    try(data.aws_iam_policy_document.assume_role_with_mfa[0].json,
-        data.aws_iam_policy_document.assume_role[0].json)
-  )
+  assume_role_policy = length(trimspace(var.custom_role_trust_policy)) > 0 ? var.custom_role_trust_policy : (
+      var.role_requires_mfa
+      ? data.aws_iam_policy_document.assume_role_with_mfa[0].json
+      : data.aws_iam_policy_document.assume_role[0].json
+    )
 
   tags = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "this" {
-  for_each = var.create_role ? var.role_policy_arns : {}
+  for_each = var.create_role ? toset(local.all_policy_arns) : []
 
   role       = aws_iam_role.this[0].name
   policy_arn = each.value

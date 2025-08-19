@@ -23,17 +23,17 @@ No Modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | acl | (Optional) The canned ACL to apply. Conflicts with `grant` | `string` | `null` | no |
-| attach_policy | Controls if S3 bucket should have bucket policy attached (set to `true` to use value of `policy` as bucket policy) | `bool` | `false` | no |
+| attach_policy | Controls if S3 bucket should have bucket policy attached (set to `true` to use value of `policy`) | `bool` | `false` | no |
 | block_public_acls | Whether Amazon S3 should block public ACLs for this bucket. | `bool` | `true` | no |
 | cors_rule | List of maps containing rules for Cross-Origin Resource Sharing. | `any` | `[]` | no |
-| force_destroy | (Optional, Default:false ) A boolean that indicates all objects should be deleted from the bucket so that the bucket can be destroyed without error. These objects are not recoverable. | `bool` | `false` | no |
+| force_destroy | (Optional, Default:false ) A boolean that indicates all objects should be deleted from the bucket so that the bucket can be destroyed without error. | `bool` | `false` | no |
 | grant | An ACL policy grant. Conflicts with `acl` | `any` | `[]` | no |
-| intelligent_tiering | Map containing intelligent tiering configuration. | `any` | `{` | no |
+| intelligent_tiering | Map containing intelligent tiering configuration. | `any` | `{}` | no |
 | lifecycle_rule | List of maps containing configuration of object lifecycle management. | `any` | `[]` | no |
 | metric_configuration | Map containing bucket metric configuration. | `any` | `[]` | no |
-| object_ownership | Object ownership. Valid values: BucketOwnerEnforced, BucketOwnerPreferred or ObjectWriter. 'BucketOwnerEnforced': ACLs are disabled, and the bucket owner automatically owns and has full control over every object in the bucket. 'BucketOwnerPreferred': Objects uploaded to the bucket change ownership to the bucket owner if the objects are uploaded with the bucket-owner-full-control canned ACL. 'ObjectWriter': The uploading account will own the object if the object is uploaded without the bucket-owner-full-control ACL. | `string` | `""` | no |
+| object_ownership | Object ownership. Valid values: BucketOwnerEnforced, BucketOwnerPreferred or ObjectWriter | `string` | `""` | no |
 | policy | Bucket policy JSON document | `string` | `null` | no |
-| tags | Tags to apply to the bucket | `map(string)` | `{` | no |
+| tags | Tags to apply to the bucket | `map(string)` | `{}` | no |
 | create | Enable or control create | `bool` | `false` | no |
 | enable_acl | Enable or control enable acl | `bool` | `false` | no |
 | enable_cors | Enable or control enable cors | `bool` | `false` | no |

@@ -14,7 +14,7 @@ No Modules.
 |------|-------------|------|---------|:--------:|
 | create | Controls whether to create the CloudTrail resource | `bool` | `true` | no |
 | name | Name of the CloudTrail | `string` | `null` | yes |
-| tags | Tags to apply to the resources | `map(string)` | `{` | no |
+| tags | Tags to apply to the resources | `map(string)` | `{}` | no |
 | s3_bucket_name | Name of the S3 bucket where CloudTrail will deliver logs | `string` | `null` | yes |
 | s3_key_prefix | Prefix for S3 object names | `string` | `null` | no |
 | include_global_service_events | Specifies whether the trail is publishing events from global services such as IAM | `bool` | `true` | no |

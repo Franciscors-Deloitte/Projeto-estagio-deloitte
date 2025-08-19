@@ -31,8 +31,8 @@ No Modules.
 | period | The period in seconds over which the specified statistic is applied | `number` | `null` | no |
 | statistic | The statistic to apply to the alarm's associated metric | `string` | `null` | no |
 | extended_statistic | The percentile statistic for the metric associated with the alarm | `string` | `null` | no |
-| dimensions | The dimensions for the alarm's associated metric | `map(string)` | `{` | no |
-| tags | A map of tags to assign to the resource | `map(string)` | `{` | no |
+| dimensions | The dimensions for the alarm's associated metric | `map(string)` | `{}` | no |
+| tags | A map of tags to assign to the resource | `map(string)` | `{}` | no |
 
 ## Outputs
 
@@ -40,3 +40,4 @@ No Modules.
 |------|-------------|
 | cloudwatch_metric_alarm_arn | The ARN of the Cloudwatch metric alarm. |
 | cloudwatch_metric_alarm_id | The ID of the Cloudwatch metric alarm. |
+| alarm_name | The name of the CloudWatch metric alarm |

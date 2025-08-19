@@ -6,22 +6,22 @@ No Modules.
 
 | Name | Type |
 |------|------|
-| aws_partition.current | Data Source |
-| aws_caller_identity.current | Data Source |
-| aws_iam_session_context.current | Data Source |
 | aws_iam_role.this | resource |
 | aws_eks_cluster.this | resource |
 | time_sleep.this | resource |
-| aws_iam_policy_document.cni_ipv6_policy | Data Source |
 | aws_iam_policy.cni_ipv6_policy | resource |
+| aws_partition.current | Data Source |
+| aws_caller_identity.current | Data Source |
+| aws_iam_session_context.current | Data Source |
+| aws_iam_policy_document.assume_role | Data Source |
+| aws_iam_policy_document.cni_ipv6_policy | Data Source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | create | Controls if resources should be created | `bool` | `true` | no |
-| putin_khuylo | Just a funny/irrelevant flag | `bool` | `false` | no |
-| tags | Tags to apply to all resources | `map(string)` | `{` | no |
+| tags | Tags to apply to all resources | `map(string)` | `{}` | no |
 | cluster_name | Name of the EKS cluster | `string` | `""` | no |
 | cluster_version | Kubernetes version for the EKS cluster | `string` | `""` | no |
 | cluster_ip_family | IP family to use for the cluster | `string` | `""` | no |
@@ -32,12 +32,30 @@ No Modules.
 | cluster_enabled_log_types | List of cluster control plane log types to enable | `list(string)` | `[]` | no |
 | subnet_ids | Subnet IDs for worker nodes | `list(string)` | `[]` | no |
 | cluster_additional_security_group_ids | Additional security groups to associate with the cluster | `list(string)` | `[]` | no |
-| cluster_encryption_config | Encryption config for the cluster | `any` | `{` | no |
+| cluster_encryption_config | Encryption config for the cluster | `any` | `{}` | no |
 | encryption_resources | Resources to encrypt with the provided KMS key | `list(string)` | `[]` | no |
 | kms_key_arn | KMS Key ARN to use for encryption | `string` | `""` | no |
 | iam_role_arn | IAM role ARN to use for the EKS cluster | `string` | `""` | no |
-| outpost_config | Configuration for AWS Outpost clusters | `any` | `{` | no |
+| outpost_config | Configuration for AWS Outpost clusters | `any` | `{}` | no |
 | cluster_security_group_id | The security group ID of the EKS cluster | `string` | `""` | no |
+| clusters | Map of EKS clusters to create | `map(object({
+    cluster_name                          = string
+    cluster_version                       = string
+    cluster_ip_family                     = string
+    cluster_service_ipv4_cidr             = string
+    subnet_ids                            = list(string)
+    cluster_security_group_id             = string
+    cluster_additional_security_group_ids = list(string)
+    cluster_endpoint_private_access       = bool
+    cluster_endpoint_public_access        = bool
+    cluster_endpoint_public_access_cidrs  = list(string)
+    cluster_enabled_log_types             = list(string)
+    kms_key_arn                           = string
+    encryption_resources                  = list(string)
+    cluster_encryption_config             = map(any)
+    iam_role_arn                          = string
+    tags                                  = map(string)
+  }))` | `n/a` | yes |
 | create_cni_ipv6_iam_policy | Whether to create the CNI IPv6 IAM policy | `bool` | `false` | no |
 | dataplane_wait_duration | Duration to wait for dataplane to be ready | `string` | `""` | no |
 
@@ -53,6 +71,7 @@ No Modules.
 | cluster_version | The Kubernetes version for the cluster |
 | cluster_platform_version | Platform version for the cluster |
 | cluster_status | Status of the EKS cluster. One of `CREATING`, `ACTIVE`, `DELETING`, `FAILED` |
+| clusters | Map of cluster configurations passed to the module |
 | cluster_oidc_issuer_url | The URL on the EKS cluster for the OpenID Connect identity provider |
 | oidc_provider | The OpenID Connect identity provider (issuer URL without leading `https://`) |
 | cluster_primary_security_group_id | Cluster security group used for control-plane-to-data-plane communication |

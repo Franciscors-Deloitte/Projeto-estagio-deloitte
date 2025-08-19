@@ -17,7 +17,7 @@ No Modules.
 | aws_auth_roles | List of role mappings to add to the aws-auth ConfigMap | `any` | `[]` | no |
 | aws_auth_users | List of user mappings to add to the aws-auth ConfigMap | `any` | `[]` | no |
 | aws_auth_accounts | List of AWS account IDs to add to the aws-auth ConfigMap | `list(string)` | `[]` | no |
-| labels | Labels to add to the aws-auth ConfigMap metadata | `map(string)` | `{` | no |
+| labels | Labels to add to the aws-auth ConfigMap metadata | `map(string)` | `{}` | no |
 
 ## Outputs
 

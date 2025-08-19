@@ -19,7 +19,7 @@ No Modules.
 | kms_key_id | The ARN of the KMS Key to use when encrypting logs | `string` | `null` | no |
 | log_group_class | Specified the log class of the log group. Possible values are: STANDARD or INFREQUENT_ACCESS | `string` | `null` | no |
 | skip_destroy | Set to true if you do not wish the log group (and any logs it may contain) to be deleted at destroy time, and instead just remove the log group from the Terraform state | `bool` | `null` | no |
-| tags | A map of tags to add to Cloudwatch log group | `map(string)` | `{` | no |
+| tags | A map of tags to add to Cloudwatch log group | `map(string)` | `{}` | no |
 
 ## Outputs
 

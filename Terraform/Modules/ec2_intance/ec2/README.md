@@ -1,3 +1,7 @@
+## Modules
+
+No Modules.
+
 ## Resources
 
 | Name | Type |
@@ -5,8 +9,7 @@
 | aws_instance.this | resource |
 | aws_ebs_volume.this | resource |
 | aws_volume_attachment.this | resource |
-| aws_eip.this| resource |
-
+| aws_eip.this | resource |
 
 ## Inputs
 
@@ -25,7 +28,7 @@
 | disable_api_termination | If true, enables EC2 Instance Termination Protection | `bool` | `null` | no |
 | user_data | The user data to provide when launching the instance. Do not pass gzip-compressed data via this argument; see user_data_base64 instead | `string` | `null` | no |
 | enable_monitoring | Whether to enable detailed monitoring for the instance | `bool` | `false` | no |
-| tags | A mapping of tags to assign to the resources | `map(string)` | `{` | no |
+| tags | A mapping of tags to assign to the resources | `map(string)` | `{}` | no |
 | ebs_optimized | If true, the launched EC2 instance will be EBS-optimized | `bool` | `null` | no |
 | create_ebs | Whether to create and attach an additional EBS volume | `bool` | `false` | no |
 | ebs_volume_size | Size of the additional EBS volume in GiB | `number` | `10` | no |
@@ -34,7 +37,6 @@
 | root_volume_size | Size of the root volume in GiB | `number` | `8` | no |
 | root_volume_type | Type of the root volume (e.g., gp2, gp3, io1, etc.) | `string` | `"gp3"` | no |
 | attach_eip | Whether to allocate and attach an Elastic IP to the instance | `bool` | `false` | no |
-
 
 ## Outputs
 
